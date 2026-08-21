@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>SkyLink Crew | Flight Deck</title>
+
+<!-- Icon library: Font Awesome Free 6 (open source, CDN) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<!-- Type system: Poppins (headings — rounded geometric, matches reference), Inter (body/UI text) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ======================================================================
+   DESIGN TOKENS — matched to the reference screenshots.
+   Edit colors/fonts here to re-theme the whole app.
+   ====================================================================== */
+:root{
+  --bg:            #FFFFFF;   /* app screen background                  */
+  --bg-outer:      #EDEBF3;   /* page backdrop behind the app column    */
+  --surface:       #FFFFFF;   /* white surfaces (headers)               */
+  --card:          #F0EEF5;   /* light lavender-gray card fill          */
+  --card-alt:      #F5F3F9;   /* slightly lighter card variant          */
+  --ink:           #3B4759;   /* primary dark slate text                */
+  --ink-soft:      #4E5A6C;
+  --ink-muted:     #9AA3B2;   /* secondary gray text                    */
+  --navy:          #3B4759;   /* selected date / primary buttons        */
+  --red:           #EB4E5C;   /* alert / notification badge             */
+  --orange:        #E8983F;   /* flight duty accent                     */
+  --teal:          #34A79C;   /* reserve duty accent                    */
+  --olive:         #8C8C46;   /* training duty accent                   */
+  --magenta:       #B4507C;   /* leave / admin duty accent               */
+  --brown:         #B98A52;   /* report duty accent                     */
+  --line:          #E7E5EF;
+  --radius-lg:     20px;
+  --radius-md:     14px;
+  --radius-sm:     10px;
+  --font-display:  'Poppins', sans-serif;
+  --font-body:     'Inter', sans-serif;
+  --font-mono:     'IBM Plex Mono', monospace;
+}
+
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ height:100%; overflow:hidden; overscroll-behavior:none; }
+body{
+  margin:0; background:var(--bg-outer); color:var(--ink);
+  font-family:var(--font-body);
+  -webkit-font-smoothing:antialiased;
+  display:flex; justify-content:center;
+  height:100vh; height:100dvh;
+}
+button{ font-family:inherit; cursor:pointer; }
+input{ font-family:inherit; }
+::selection{ background:#DCD8EA; }
+
+/* The whole app is a fixed-height column pinned to the viewport — nothing
+   here ever scrolls except the content area inside each screen, so the
+   bottom tab bar stays glued to the bottom and never drifts. */
+#app-root{
+  width:100%; max-width:430px; height:100vh; height:100dvh; background:var(--bg);
+  position:relative; display:flex; flex-direction:column; overflow:hidden;
+}
+.hidden{ display:none !important; }
+
+/* ---------------------------------------------------------------------
+   LOGIN SCREEN
+   --------------------------------------------------------------------- */
+#login-screen{
+  flex:1; display:flex; flex-direction:column; justify-content:center;
+  padding:40px 28px; background:var(--bg); min-height:100vh;
+}
+.brand-mark{ display:flex; align-items:center; gap:10px; margin-bottom:46px; }
+.brand-mark i{
+  width:40px; height:40px; border-radius:12px; background:var(--card);
+  color:var(--navy); display:flex; align-items:center; justify-content:center; font-size:18px;
+}
+.brand-mark span{ font-family:var(--font-display); font-weight:700; font-size:20px; color:var(--ink); }
+.login-heading h1{
+  font-family:var(--font-display); font-size:30px; line-height:1.2; margin:0 0 8px; color:var(--ink); font-weight:700;
+}
+.login-heading p{ margin:0 0 34px; color:var(--ink-muted); font-size:14.5px; }
+
+.field{ margin-bottom:16px; }
+.field label{ display:block; font-size:12px; color:var(--ink-muted); margin-bottom:7px; letter-spacing:.3px; text-transform:uppercase; font-weight:600; }
+.field .field-input{
+  display:flex; align-items:center; gap:10px;
+  background:var(--card); border:1px solid transparent; border-radius:var(--radius-md); padding:13px 14px;
+}
+.field .field-input:focus-within{ border-color:var(--navy); background:#fff; box-shadow:0 0 0 3px rgba(59,71,89,.08); }
+.field .field-input i{ color:var(--ink-muted); font-size:14px; width:16px; }
+.field input{ border:none; background:transparent; outline:none; color:var(--ink); font-size:15px; width:100%; }
+.field input::placeholder{ color:#B7BECB; }
+#login-error{
+  color:#A8283B; background:#FCE7E9; border:1px solid #F6C7CD;
+  padding:10px 12px; border-radius:var(--radius-sm); font-size:13px; margin-bottom:14px; display:none;
+}
+.btn-primary{
+  width:100%; background:var(--navy); color:#fff; border:none;
+  padding:15px; border-radius:var(--radius-md); font-weight:700; font-size:15px;
+  display:flex; align-items:center; justify-content:center; gap:8px; margin-top:10px;
+  transition:filter .15s ease, transform .15s ease;
+}
+.btn-primary:hover{ filter:brightness(1.1); }
+.btn-primary:active{ transform:scale(.98); }
+.login-hint{ margin-top:22px; font-size:12px; color:var(--ink-muted); line-height:1.6; text-align:center; }
+.login-hint b{ color:var(--ink-soft); }
+
+/* ---------------------------------------------------------------------
+   APP SHELL
+   --------------------------------------------------------------------- */
+#app-shell{ flex:1; display:flex; flex-direction:column; min-height:0; }
+
+.app-header{ background:var(--surface); padding:20px 20px 6px; flex-shrink:0; }
+.header-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; position:relative; }
+.avatar-block{ display:flex; align-items:center; gap:12px; }
+.header-date-center{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  text-align:center; white-space:nowrap; pointer-events:none;
+}
+.avatar{
+  width:42px; height:42px; border-radius:50%; background:var(--card);
+  display:flex; align-items:center; justify-content:center; font-family:var(--font-display);
+  font-weight:600; color:var(--navy); font-size:14px; overflow:hidden; flex-shrink:0; cursor:pointer; border:none; padding:0;
+}
+.avatar img{ width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
+.header-date{ font-size:16.5px; font-weight:600; color:var(--ink); }
+.header-role{ font-size:12px; color:var(--ink-muted); margin-top:1px; }
+.header-icons{ display:flex; gap:14px; }
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; background:var(--card);
+  border:none; color:var(--ink); display:flex; align-items:center; justify-content:center; font-size:15px;
+  position:relative;
+}
+.icon-btn .dot{
+  position:absolute; top:0; right:1px; width:8px; height:8px; border-radius:50%;
+  background:var(--red); border:2px solid var(--surface);
+}
+
+.app-main{ flex:1; min-height:0; padding:16px 18px 18px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.view{
+  animation:fade-in .18s ease;
+  flex:1; min-height:0; display:flex; flex-direction:column; position:relative;
+}
+@keyframes fade-in{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+.section-label{
+  font-family:var(--font-display); font-weight:600; font-size:12.5px; letter-spacing:.3px;
+  color:var(--ink-muted); margin:20px 2px 10px;
+}
+.section-label:first-child{ margin-top:0; }
+
+/* ---- "Up Next" card ---- */
+.upnext-card{ background:var(--card); border-radius:var(--radius-lg); padding:18px 20px 20px; }
+.upnext-top{ display:flex; align-items:center; justify-content:space-between; }
+.upnext-label{ font-family:var(--font-display); font-weight:600; font-size:13.5px; color:var(--ink); }
+.upnext-status{ font-size:11px; padding:4px 10px; border-radius:20px; font-weight:600; }
+.upnext-status.published{ background:#DCF1EC; color:#1E8E75; }
+.upnext-status.unpublished{ background:#FBEAD4; color:#C07A1F; }
+.upnext-duty{ font-family:var(--font-display); font-size:26px; font-weight:700; color:var(--ink); margin:10px 0 16px; }
+.upnext-route{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.up-pt{ text-align:center; }
+.up-pt .code{ font-family:var(--font-mono); font-size:19px; font-weight:600; color:var(--ink); }
+.up-pt .time{ font-family:var(--font-mono); font-size:12px; color:var(--ink-muted); margin-top:2px; }
+.up-line{ flex:1; position:relative; height:1px; background:repeating-linear-gradient(90deg,#C7C4D6 0 6px, transparent 6px 11px); }
+.up-line i{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--card); color:var(--orange); font-size:13px; padding:0 4px; }
+.upnext-grid{ display:flex; justify-content:space-between; }
+.up-field .up-field-label{ font-size:11px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.3px; margin-bottom:3px; }
+.up-field .up-field-value{ font-size:15px; font-weight:600; color:var(--ink); }
+
+/* ---- quick action circles ---- */
+.quick-actions{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:6px; }
+.qa-btn{ background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:8px; padding:6px 0; }
+.qa-circle{
+  width:58px; height:58px; border-radius:50%; background:var(--card);
+  display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--ink); position:relative;
+}
+.qa-badge{
+  position:absolute; top:-3px; right:-3px; background:var(--red); color:#fff; font-size:10.5px; font-weight:700;
+  width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid var(--bg);
+}
+.qa-label{ font-size:11.5px; font-weight:600; color:var(--ink); }
+
+/* ---- generic info cards ---- */
+.info-card{
+  background:var(--card); border-radius:var(--radius-md); padding:15px 16px; margin-bottom:10px;
+  display:flex; align-items:center; gap:12px;
+}
+.info-card .ic-icon{
+  width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;
+}
+.info-card .ic-body{ flex:1; min-width:0; }
+.info-card .ic-title{ font-weight:700; font-size:14px; color:var(--ink); display:flex; align-items:center; gap:6px; }
+.info-card .ic-sub{ font-size:12.5px; color:var(--ink-muted); margin-top:2px; }
+.info-card .chev{ color:var(--ink-muted); font-size:13px; }
+.count-pill{
+  background:var(--red); color:#fff; width:20px; height:20px; border-radius:50%; font-size:11px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+
+/* ---------------------------------------------------------------------
+   SUB-PAGE HEADER (Schedule / Swaps / Board / Chat / Documents)
+   --------------------------------------------------------------------- */
+.subpage-head{ display:flex; align-items:center; gap:14px; padding:18px 18px 12px; background:var(--surface); flex-shrink:0; }
+.subpage-head button{ background:var(--card); border:none; width:36px; height:36px; border-radius:50%; color:var(--ink); flex-shrink:0; }
+.subpage-head .sp-title-block{ flex:1; text-align:left; }
+.subpage-head.centered .sp-title-block{ text-align:center; }
+.subpage-head h2{ font-family:var(--font-display); font-size:17px; margin:0; color:var(--ink); font-weight:600; }
+.subpage-head .sp-sub{ font-size:12.5px; color:var(--ink-muted); margin-top:2px; }
+.subpage-head .sp-more{ margin-left:auto; }
+
+/* ---------------------------------------------------------------------
+   PROFILE VIEW — opened from the header avatar (CAE Crew Access style)
+   --------------------------------------------------------------------- */
+.profile-hero{
+  background:var(--card); border-radius:var(--radius-lg); overflow:hidden;
+  display:flex; flex-direction:column; align-items:center; text-align:center; margin-bottom:16px;
+}
+.profile-cover{
+  width:100%; height:108px; background-color:#8C1625; background-position:center; background-size:cover;
+}
+.profile-identity{ display:flex; flex-direction:column; align-items:center; padding:0 20px 22px; }
+.profile-photo{
+  width:88px; height:88px; border-radius:50%; object-fit:cover; cursor:pointer;
+  border:4px solid var(--surface); box-shadow:0 6px 16px -6px rgba(0,0,0,.3); margin:-46px 0 13px;
+  position:relative; z-index:1; background:var(--surface);
+}
+.profile-name{ font-family:var(--font-display); font-weight:700; font-size:19px; color:var(--ink); }
+.profile-rank{ font-size:13px; color:var(--ink-muted); margin-top:3px; }
+.profile-meta{ display:flex; gap:8px; margin-top:13px; flex-wrap:wrap; justify-content:center; }
+.profile-meta-chip{ background:var(--card-alt); color:var(--ink-soft); font-size:11px; font-weight:700; padding:5px 12px; border-radius:20px; letter-spacing:.2px; }
+
+.profile-section{
+  background:var(--card); border-radius:var(--radius-md); padding:0; margin-bottom:10px; overflow:hidden;
+}
+.profile-section-head{ display:flex; align-items:flex-start; gap:14px; padding:15px 16px; cursor:pointer; }
+.profile-section .ps-icon{
+  width:40px; height:40px; border-radius:12px; background:var(--surface); color:var(--navy);
+  display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0;
+}
+.profile-section .ps-body{ flex:1; min-width:0; }
+.profile-section .ps-title{ font-weight:700; font-size:14px; color:var(--ink); }
+.profile-section .ps-sub{ font-size:12.5px; color:var(--ink-muted); margin-top:3px; line-height:1.45; }
+.profile-section .chev{ color:var(--ink-muted); font-size:13px; margin-top:3px; flex-shrink:0; transition:transform .25s ease; }
+.profile-section.expanded .chev{ transform:rotate(90deg); }
+.profile-detail{
+  max-height:0; overflow:hidden; transition:max-height .3s ease;
+  padding:0 16px; border-top:1px solid transparent;
+}
+.profile-section.expanded .profile-detail{ max-height:900px; border-top-color:var(--line); padding:14px 16px 16px; }
+
+/* ---- Personal & Service Info table ---- */
+.profile-detail-photo-row{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.profile-detail-photo{ width:52px; height:52px; border-radius:50%; object-fit:cover; flex-shrink:0; border:2px solid var(--surface); }
+.profile-detail-name{ font-family:var(--font-display); font-weight:700; font-size:14.5px; color:var(--ink); }
+.profile-detail-role{ font-size:12px; color:var(--ink-muted); margin-top:2px; }
+.profile-table{ width:100%; border-collapse:collapse; }
+.profile-table tr{ border-bottom:1px solid var(--line); }
+.profile-table tr:last-child{ border-bottom:none; }
+.profile-table td{ padding:9px 0; font-size:12.5px; vertical-align:top; }
+.profile-table td:first-child{ color:var(--ink-muted); width:42%; padding-right:10px; }
+.profile-table td:last-child{ color:var(--ink); font-weight:600; text-align:right; font-family:var(--font-mono); }
+
+/* ---- Check-in Access credential card ---- */
+.checkin-card{ display:flex; align-items:center; gap:12px; background:var(--surface); border-radius:var(--radius-md); padding:14px; margin-bottom:12px; }
+.checkin-photo{ width:50px; height:50px; border-radius:12px; object-fit:cover; flex-shrink:0; }
+.checkin-id{ flex:1; min-width:0; }
+.checkin-name{ font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--ink); }
+.checkin-role{ font-size:11.5px; color:var(--ink-muted); margin-top:1px; }
+.checkin-meta{ font-size:10.5px; color:var(--ink-muted); margin-top:3px; font-family:var(--font-mono); }
+.checkin-status{ background:#DCF1EC; color:#1E8E75; font-size:10.5px; font-weight:700; padding:4px 10px; border-radius:20px; flex-shrink:0; }
+.checkin-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+.checkin-stat{ background:var(--surface); border-radius:var(--radius-sm); padding:10px 12px; }
+.cs-label{ font-size:10px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.2px; margin-bottom:3px; }
+.cs-value{ font-size:12.5px; font-weight:700; color:var(--ink); }
+.btn-checkin{
+  width:100%; background:var(--navy); color:#fff; border:none; padding:12px; border-radius:var(--radius-sm);
+  font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;
+}
+.btn-checkin.alt{ background:var(--surface); color:var(--ink); }
+.btn-checkin:last-child{ margin-bottom:0; }
+
+/* ---- Avatars: change profile picture ---- */
+.avatar-manage{ display:flex; flex-direction:column; align-items:center; gap:14px; padding-bottom:4px; }
+.avatar-manage-photo{
+  width:96px; height:96px; border-radius:50%; object-fit:cover;
+  border:3px solid var(--surface); box-shadow:0 6px 16px -6px rgba(0,0,0,.3);
+}
+.avatar-manage-actions{ display:flex; gap:10px; width:100%; }
+.avatar-manage-note{ font-size:12px; color:var(--ink-muted); text-align:center; }
+
+/* ---------------------------------------------------------------------
+   SCHEDULE / CALENDAR
+   --------------------------------------------------------------------- */
+.month-nav{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.month-nav .m-label{ font-family:var(--font-display); font-weight:600; font-size:16.5px; color:var(--ink); }
+.month-nav button{ background:var(--card); border:none; width:32px; height:32px; border-radius:9px; color:var(--ink); }
+
+.cal-grid{ background:var(--bg); }
+.cal-grid{ width:100%; max-width:100%; overflow:hidden; }
+.cal-weekdays{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); text-align:center; font-size:11px; color:var(--ink-muted); font-weight:700; margin-bottom:8px; }
+.cal-days{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); row-gap:6px; width:100%; }
+.cal-cell{
+  aspect-ratio:1/1.15; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  min-width:0; padding-top:6px; font-size:13px; color:var(--ink); background:none; border:none; position:relative; gap:2px;
+}
+.cal-cell.empty{ visibility:hidden; }
+.cal-cell.today span:first-child{ font-weight:700; }
+.cal-cell.today::after{ content:""; position:absolute; top:3px; right:10px; width:4px; height:4px; border-radius:50%; background:var(--orange); }
+.cal-cell.selected{ background:var(--navy); color:#fff; }
+.cal-cell.selected .cal-code{ color:#E4E7EC; }
+.cal-cell .cal-ico{ font-size:12px; }
+.cal-cell .cal-code{ max-width:100%; overflow:hidden; text-overflow:ellipsis; font-size:8.5px; font-weight:600; letter-spacing:.2px; color:var(--ink-muted); }
+.cal-cell .cal-underline{ position:absolute; bottom:-4px; left:6%; right:6%; height:2px; background:var(--line); border-radius:2px; }
+
+/* ---- roster stats strip (CAE-style month-at-a-glance) ---- */
+.roster-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
+.stat-chip{ background:var(--card); border-radius:var(--radius-md); padding:10px 4px 9px; text-align:center; }
+.stat-num{ font-family:var(--font-display); font-weight:700; font-size:15px; color:var(--ink); line-height:1.2; }
+.stat-lbl{ font-size:9px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.2px; margin-top:3px; }
+
+/* ---- Month/List segmented toggle + Today jump button ---- */
+.sched-toolbar{ display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+.view-toggle{ display:flex; background:var(--card); border-radius:12px; padding:3px; flex:1; }
+.vt-btn{ flex:1; border:none; background:none; padding:9px 6px; border-radius:9px; font-size:12px; font-weight:700; color:var(--ink-muted); display:flex; align-items:center; justify-content:center; gap:6px; }
+.vt-btn i{ font-size:11px; }
+.vt-btn.active{ background:var(--navy); color:#fff; }
+.today-btn{ border:none; background:var(--card); color:var(--navy); font-weight:700; font-size:11.5px; padding:0 14px; height:38px; border-radius:12px; white-space:nowrap; flex-shrink:0; }
+
+/* ---- duty-type legend row ---- */
+.legend-row{ display:flex; flex-wrap:wrap; gap:8px 14px; overflow:hidden; padding:2px 0 12px; }
+.legend-row::-webkit-scrollbar{ display:none; }
+.legend-chip{ display:flex; align-items:center; gap:5px; font-size:11px; color:var(--ink-muted); white-space:nowrap; flex-shrink:0; }
+.legend-dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+
+/* ---- month nav pinned while the day list scrolls ---- */
+.month-nav{ position:sticky; top:0; z-index:3; background:var(--bg); padding:2px 0 12px; margin-bottom:0; }
+
+/* Keep schedule controls inside the phone-width app column on small screens. */
+#view-schedule, #view-schedule .app-main{ max-width:100%; overflow-x:hidden; }
+
+/* ---- List / agenda view ---- */
+.agenda-date-label{ font-family:var(--font-display); font-weight:600; font-size:12.5px; color:var(--ink-muted); margin:18px 2px 8px; display:flex; align-items:center; gap:6px; }
+.agenda-date-label:first-child{ margin-top:0; }
+.agenda-date-label.is-today{ color:var(--navy); }
+.agenda-date-label.is-today::after{ content:""; width:5px; height:5px; border-radius:50%; background:var(--orange); }
+
+.day-detail{ margin-top:6px; }
+.day-detail-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.day-detail-head .dd-date{ font-family:var(--font-display); font-weight:600; font-size:15px; color:var(--ink); }
+.dd-flag{ font-size:12px; font-weight:600; display:flex; align-items:center; gap:5px; }
+.dd-flag.unpublished{ color:#C07A1F; }
+.dd-flag.published{ color:#1E8E75; }
+
+.duty-wrap{ margin-bottom:9px; }
+.duty-item{
+  position:relative; display:flex; gap:12px; background:var(--card); border-radius:var(--radius-md);
+  padding:14px 14px 14px 16px; align-items:flex-start; border-left:4px solid transparent;
+}
+.duty-item.clickable{ cursor:pointer; }
+.duty-item .di-icon{ width:20px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; margin-top:3px; }
+.duty-item .di-body{ flex:1; min-width:0; }
+.duty-item .di-title{ font-weight:700; font-size:14px; color:var(--ink); margin-bottom:9px; }
+.di-grid{ display:flex; align-items:flex-start; gap:10px; }
+.di-col{ flex:1; min-width:0; }
+.di-col .di-label{ font-size:10.5px; color:var(--ink-muted); text-transform:capitalize; margin-bottom:3px; }
+.di-col .di-value{ font-size:13.5px; font-weight:600; color:var(--ink); font-family:var(--font-mono); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.di-col.arrow{ flex:0 0 16px; display:flex; align-items:center; justify-content:center; padding-top:15px; color:var(--ink-muted); font-size:11px; }
+.di-note{ font-size:11.5px; color:var(--ink-muted); margin-top:8px; }
+.duty-item .chev{ margin-left:6px; margin-top:5px; color:var(--ink-muted); flex-shrink:0; transition:transform .25s ease; }
+.duty-item.expanded .chev{ transform:rotate(90deg); }
+
+/* ---- slide-open detail panel (crew list / airport info) ---- */
+.duty-expand{ max-height:0; overflow:hidden; transition:max-height .32s ease; }
+.duty-expand-inner{ padding-top:8px; }
+.duty-expand-card{ background:var(--card-alt); border-radius:var(--radius-md); padding:14px 16px 6px; }
+
+.crew-section-label{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-muted); margin:0 0 6px; }
+.crew-section-label.second{ margin-top:12px; }
+.crew-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); }
+.crew-row:last-child{ border-bottom:none; }
+.crew-avatar{
+  width:30px; height:30px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center;
+  justify-content:center; font-size:10.5px; font-weight:700; font-family:var(--font-display); flex-shrink:0;
+}
+.crew-name{ font-size:13px; font-weight:600; color:var(--ink); }
+.crew-role{ font-size:11px; color:var(--ink-muted); margin-top:1px; }
+
+.airport-head{ display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.airport-code-badge{
+  width:40px; height:40px; border-radius:10px; background:var(--navy); color:#fff; display:flex; align-items:center;
+  justify-content:center; font-family:var(--font-mono); font-weight:700; font-size:12.5px; flex-shrink:0;
+}
+.airport-name{ font-weight:700; font-size:13.5px; color:var(--ink); }
+.airport-sub{ font-size:11.5px; color:var(--ink-muted); margin-top:1px; }
+.airport-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; margin-bottom:14px; }
+.airport-field .af-label{ font-size:10px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.2px; margin-bottom:3px; }
+.airport-field .af-value{ font-size:12.5px; font-weight:600; color:var(--ink); font-family:var(--font-mono); }
+.freq-row{ display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); font-size:12.5px; }
+.freq-row:last-child{ border-bottom:none; }
+.freq-name{ color:var(--ink-muted); }
+.freq-val{ font-family:var(--font-mono); font-weight:600; color:var(--ink); }
+
+.empty-state{ text-align:center; padding:34px 10px; color:var(--ink-muted); }
+.empty-state i{ font-size:26px; margin-bottom:10px; color:#D6D2E2; }
+.empty-state p{ font-size:13px; margin:0; }
+
+/* ---------------------------------------------------------------------
+   DUTY SWAPS
+   --------------------------------------------------------------------- */
+.tab-row{ display:flex; background:var(--card); border-radius:12px; padding:4px; margin-bottom:16px; }
+.tab-btn{ flex:1; border:none; background:none; padding:9px 6px; border-radius:9px; font-size:12.5px; font-weight:700; color:var(--ink-muted); }
+.tab-btn.active{ background:var(--navy); color:#fff; }
+
+.swap-card{ background:var(--card); border-radius:var(--radius-md); padding:15px 16px; margin-bottom:10px; }
+.swap-card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+.swap-route{ font-family:var(--font-mono); font-weight:600; font-size:14px; color:var(--ink); }
+.swap-date{ font-size:12px; color:var(--ink-muted); margin-top:2px; }
+.status-chip{ font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:20px; text-transform:uppercase; letter-spacing:.3px; white-space:nowrap; }
+.status-chip.pending{ background:#FBEAD4; color:#C07A1F; }
+.status-chip.accepted{ background:#DCF1EC; color:#1E8E75; }
+.status-chip.declined{ background:#FBDFE1; color:#B23348; }
+.swap-people{ font-size:12.5px; color:var(--ink-muted); margin-top:9px; }
+.swap-people b{ color:var(--ink); }
+.swap-actions{ display:flex; gap:8px; margin-top:12px; }
+.btn-sm{ flex:1; border:none; padding:10px; border-radius:9px; font-weight:700; font-size:12.5px; }
+.btn-sm.accept{ background:var(--navy); color:#fff; }
+.btn-sm.decline{ background:#fff; color:#B23348; border:1px solid var(--line); }
+.btn-sm.cancel{ background:#fff; color:var(--ink-muted); border:1px solid var(--line); }
+
+.fab{
+  position:absolute; right:20px; bottom:20px; width:54px; height:54px; border-radius:50%;
+  background:var(--navy); color:#fff; border:none; font-size:18px; box-shadow:0 10px 24px -8px rgba(59,71,89,.5);
+  z-index:5;
+}
+
+/* swap request flow */
+.form-block{ margin-top:16px; }
+.form-block label{ display:block; font-size:12px; font-weight:600; color:var(--ink-muted); margin-bottom:8px; }
+.form-block input{
+  width:100%; padding:13px 14px; border:1px solid transparent; border-radius:var(--radius-sm); font-size:14px; margin-bottom:16px; outline:none; background:var(--card); color:var(--ink);
+}
+.form-block input::placeholder{ color:#ADA9C0; }
+.form-block input:focus{ border-color:var(--navy); background:#fff; box-shadow:0 0 0 3px rgba(59,71,89,.08); }
+.selected-duty-preview{ background:var(--card-alt); border-radius:var(--radius-sm); padding:13px 14px; font-size:12.5px; color:var(--ink-muted); margin-bottom:16px; line-height:1.5; }
+.selected-duty-preview b{ color:var(--ink); display:block; font-size:15px; margin-bottom:2px; font-family:var(--font-mono); font-weight:600; }
+.btn-row{ display:flex; gap:10px; }
+.btn-outline{ flex:1; background:var(--card); border:none; color:var(--ink-soft); padding:13px; border-radius:var(--radius-sm); font-weight:700; font-size:12.5px; letter-spacing:.3px; text-transform:uppercase; }
+.btn-solid{ flex:1; background:var(--card); color:var(--ink-muted); border:none; padding:13px; border-radius:var(--radius-sm); font-weight:700; font-size:12.5px; letter-spacing:.3px; text-transform:uppercase; transition:all .15s ease; }
+.btn-solid.is-ready{ background:var(--navy); color:#fff; }
+.details-panel{ font-size:12.5px; color:var(--ink-muted); background:var(--card-alt); padding:13px 14px; border-radius:var(--radius-sm); margin-bottom:16px; line-height:1.7; }
+
+/* ---------------------------------------------------------------------
+   TRADE BOARD / CHAT / DOCUMENTS
+   --------------------------------------------------------------------- */
+.trade-card{ background:var(--card); border-radius:var(--radius-md); padding:15px 16px; margin-bottom:10px; }
+.trade-top{ display:flex; justify-content:space-between; align-items:center; }
+.trade-route{ font-family:var(--font-mono); font-weight:700; font-size:14.5px; color:var(--ink); }
+.trade-by{ font-size:12px; color:var(--ink-muted); margin-top:3px; }
+.trade-note{ font-size:12.5px; margin-top:9px; color:var(--ink); background:var(--card-alt); padding:9px 10px; border-radius:8px; }
+.btn-offer{ margin-top:10px; width:100%; background:var(--navy); color:#fff; border:none; padding:11px; border-radius:9px; font-weight:700; font-size:12.5px; }
+
+.chat-row{ display:flex; gap:11px; align-items:center; background:var(--card); border-radius:var(--radius-md); padding:13px 15px; margin-bottom:9px; }
+.chat-avatar{ width:42px; height:42px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-family:var(--font-display); flex-shrink:0; font-size:13px; }
+.chat-name{ font-weight:700; font-size:13.5px; color:var(--ink); }
+.chat-preview{ font-size:12px; color:var(--ink-muted); margin-top:2px; }
+.chat-time{ font-size:10.5px; color:var(--ink-muted); margin-left:auto; align-self:flex-start; }
+
+.doc-row{ display:flex; align-items:center; gap:12px; background:var(--card); border-radius:var(--radius-md); padding:14px 15px; margin-bottom:9px; }
+.doc-name{ font-weight:700; font-size:13.5px; color:var(--ink); }
+.doc-exp{ font-size:12px; margin-top:2px; }
+.doc-exp.warn{ color:#B23348; font-weight:600; }
+.doc-exp.ok{ color:var(--ink-muted); }
+
+/* ---------------------------------------------------------------------
+   BOTTOM NAV
+   --------------------------------------------------------------------- */
+.bottom-nav{
+  flex-shrink:0; background:var(--surface); border-top:1px solid var(--line);
+  display:flex; padding:8px 6px calc(8px + env(safe-area-inset-bottom)); z-index:10;
+}
+.nav-btn{ flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:4px; padding:6px 0; color:var(--ink-muted); }
+.nav-btn i{ font-size:17px; }
+.nav-btn span{ font-size:10px; font-weight:600; }
+.nav-btn.active{ color:var(--navy); }
+.nav-btn.active i{ color:var(--orange); }
+
+/* page dots (matches reference marketing footer dots on dashboard) */
+.page-dots{ display:flex; justify-content:center; gap:6px; margin-top:22px; }
+.page-dots span{ width:6px; height:6px; border-radius:50%; background:var(--line); }
+.page-dots span.active{ background:var(--ink-muted); }
+
+/* toast */
+#toast{
+  position:fixed; bottom:110px; left:50%; transform:translateX(-50%) translateY(20px); opacity:0;
+  background:var(--navy); color:#fff; padding:11px 18px; border-radius:30px; font-size:13px; font-weight:600;
+  display:flex; align-items:center; gap:8px; transition:all .25s ease; pointer-events:none; z-index:50; max-width:80%; text-align:center;
+}
+#toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+#toast i{ color:#7BE0C6; }
+
+/* ---------------------------------------------------------------------
+   DARK MODE — overrides the same design tokens used everywhere above.
+   Toggled by adding data-theme="dark" to <html>. Light mode is simply
+   the absence of this attribute, so switching back to light restores
+   the app exactly as it was.
+   --------------------------------------------------------------------- */
+:root[data-theme="dark"]{
+  --bg:            #14161D;
+  --bg-outer:      #0A0B10;
+  --surface:       #1B1E27;
+  --card:          #232733;
+  --card-alt:      #272C39;
+  --ink:           #ECEDF1;
+  --ink-soft:      #C7CAD4;
+  --ink-muted:     #8A90A0;
+  --navy:          #6C86B3;
+  --line:          #2B2F3C;
+}
+:root[data-theme="dark"] #toast{ background:#2E3A57; }
+
+/* ---------------------------------------------------------------------
+   SETTINGS PANEL — bottom sheet opened from the header gear icon
+   --------------------------------------------------------------------- */
+.settings-overlay{
+  position:fixed; inset:0; z-index:200; background:rgba(15,16,22,.5);
+  display:flex; align-items:flex-end; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity .25s ease;
+}
+.settings-overlay.show{ opacity:1; pointer-events:auto; }
+.settings-sheet{
+  width:100%; max-width:430px; max-height:82vh; overflow-y:auto;
+  background:var(--surface); border-radius:22px 22px 0 0;
+  padding:10px 20px calc(18px + env(safe-area-inset-bottom));
+  transform:translateY(100%); transition:transform .3s cubic-bezier(.32,.72,0,1);
+}
+.settings-overlay.show .settings-sheet{ transform:translateY(0); }
+.settings-handle{ width:36px; height:4px; border-radius:2px; background:var(--line); margin:6px auto 16px; }
+.settings-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+.settings-header h2{ font-family:var(--font-display); font-size:18px; font-weight:700; margin:0; color:var(--ink); }
+.settings-close{
+  width:32px; height:32px; border-radius:50%; background:var(--card); border:none;
+  color:var(--ink); display:flex; align-items:center; justify-content:center; font-size:13px;
+}
+.settings-list{ margin-top:8px; }
+.settings-row{ display:flex; align-items:center; gap:14px; padding:14px 2px; border-bottom:1px solid var(--line); }
+.settings-row:last-child{ border-bottom:none; }
+.settings-row[onclick]{ cursor:pointer; }
+.settings-row-icon{
+  width:38px; height:38px; border-radius:50%; background:var(--card); color:var(--navy);
+  display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;
+}
+.settings-row-icon-danger{ background:#FCE7E9; color:#B23348; }
+.settings-row-text{ flex:1; min-width:0; }
+.settings-row-title{ font-size:14.5px; font-weight:600; color:var(--ink); }
+.settings-row-sub{ font-size:12px; color:var(--ink-muted); margin-top:2px; }
+
+/* dark / light toggle switch */
+.theme-switch{ position:relative; width:44px; height:26px; flex-shrink:0; }
+.theme-switch input{ opacity:0; width:0; height:0; position:absolute; }
+.theme-slider{ position:absolute; inset:0; background:var(--line); border-radius:20px; transition:background .25s ease; cursor:pointer; }
+.theme-slider::before{
+  content:""; position:absolute; width:20px; height:20px; left:3px; top:3px;
+  background:#fff; border-radius:50%; transition:transform .25s ease; box-shadow:0 1px 3px rgba(0,0,0,.25);
+}
+.theme-switch input:checked + .theme-slider{ background:var(--navy); }
+.theme-switch input:checked + .theme-slider::before{ transform:translateX(18px); }
+</style>
+</head>
+<body>
+
+<div id="app-root">
+
+  <!-- =====================================================================
+       APP SHELL — the app now opens straight on the Dashboard (no login)
+       ===================================================================== -->
+  <div id="app-shell">
+
+    <!-- ---------- DASHBOARD ---------- -->
+    <section id="view-dashboard" class="view">
+      <div class="app-header">
+        <div class="header-row">
+          <div class="avatar-block">
+            <button class="avatar" id="dash-avatar" onclick="switchView('profile')" title="Profile"><img class="avatar-img-target" src="" alt="Rishabh Tripathi"></button>
+          </div>
+          <div class="header-date header-date-center" id="dash-date-title">Saturday, 22 Sept</div>
+          <div class="header-icons">
+            <button class="icon-btn" onclick="showToast('No new alerts', 'fa-bell')"><i class="fa-regular fa-bell"></i></button>
+            <button class="icon-btn" onclick="openSettings()" title="Settings"><i class="fa-solid fa-gear"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="app-main">
+        <div class="upnext-card" id="up-next-card"><!-- rendered by JS --></div>
+
+        <div class="section-label">Quick actions</div>
+        <div class="quick-actions">
+          <button class="qa-btn" onclick="switchView('schedule')">
+            <div class="qa-circle"><i class="fa-regular fa-calendar-days"></i><span class="qa-badge" id="badge-schedule">1</span></div>
+            <div class="qa-label">Schedule</div>
+          </button>
+          <button class="qa-btn" onclick="switchView('swaps')">
+            <div class="qa-circle"><i class="fa-solid fa-people-arrows"></i><span class="qa-badge" id="badge-swaps">1</span></div>
+            <div class="qa-label">Duty Swaps</div>
+          </button>
+          <button class="qa-btn" onclick="switchView('board')">
+            <div class="qa-circle"><i class="fa-solid fa-earth-asia"></i></div>
+            <div class="qa-label">Trade Board</div>
+          </button>
+          <button class="qa-btn" onclick="switchView('chat')">
+            <div class="qa-circle"><i class="fa-regular fa-comments"></i></div>
+            <div class="qa-label">Chat</div>
+          </button>
+        </div>
+
+        <div class="section-label">&nbsp;</div>
+        <div class="info-card" onclick="switchView('documents')" style="cursor:pointer;">
+          <span class="count-pill" id="doc-warn-count">3</span>
+          <div class="ic-body">
+            <div class="ic-title">Documents</div>
+            <div class="ic-sub">You have expiring documents</div>
+          </div>
+          <i class="fa-solid fa-chevron-right chev"></i>
+        </div>
+
+        <div id="dash-swap-preview"><!-- next incoming swap request, rendered by JS --></div>
+
+        <div class="page-dots"><span class="active"></span><span></span></div>
+      </div>
+    </section>
+
+    <!-- ---------- SCHEDULE ---------- -->
+    <section id="view-schedule" class="view hidden">
+      <div class="subpage-head">
+        <div style="width:36px; flex-shrink:0;" aria-hidden="true"></div>
+        <div class="sp-title-block"><h2 id="sched-header-label">August 2026</h2></div>
+        <button class="sp-more" onclick="showToast('Export, filter and print options', 'fa-ellipsis')"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+      </div>
+      <div class="app-main">
+        <div class="roster-stats" id="sched-stats"><!-- rendered by JS --></div>
+
+        <div class="sched-toolbar">
+          <div class="view-toggle" id="sched-view-toggle">
+            <button class="vt-btn active" data-mode="month" onclick="setScheduleMode('month')"><i class="fa-solid fa-calendar-days"></i> Month</button>
+            <button class="vt-btn" data-mode="list" onclick="setScheduleMode('list')"><i class="fa-solid fa-list"></i> List</button>
+          </div>
+          <button class="today-btn hidden" id="sched-today-btn" onclick="jumpToToday()">Today</button>
+        </div>
+
+        <!-- Month (calendar) view -->
+        <div id="sched-month-view">
+          <div class="month-nav">
+            <button onclick="changeMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+            <div class="m-label" id="sched-month-label">August 2026</div>
+            <button onclick="changeMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+          <div class="legend-row" id="sched-legend"><!-- rendered by JS --></div>
+          <div class="cal-grid" id="sched-cal-wrap">
+            <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="cal-days" id="sched-cal-days"><!-- rendered by JS --></div>
+          </div>
+
+          <div class="day-detail" id="sched-day-detail"><!-- rendered by JS --></div>
+        </div>
+
+        <!-- List (agenda) view — inspired by CAE Crew Roster's roster list -->
+        <div id="sched-list-view" class="hidden"><!-- rendered by JS --></div>
+      </div>
+    </section>
+
+    <!-- ---------- DUTY SWAPS ---------- -->
+    <section id="view-swaps" class="view hidden">
+      <div class="subpage-head">
+        <button onclick="switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="sp-title-block"><h2>Duty Swaps</h2></div>
+      </div>
+      <div class="app-main" style="position:relative;">
+        <div class="tab-row">
+          <button class="tab-btn active" id="tab-incoming" onclick="setSwapTab('incoming')">Incoming</button>
+          <button class="tab-btn" id="tab-outgoing" onclick="setSwapTab('outgoing')">My requests</button>
+        </div>
+        <div id="swap-list"><!-- rendered by JS --></div>
+      </div>
+      <button class="fab" onclick="openSwapRequest()" title="Request a new swap"><i class="fa-solid fa-plus"></i></button>
+    </section>
+
+    <!-- ---------- NEW SWAP REQUEST FLOW ---------- -->
+    <section id="view-swap-request" class="view hidden">
+      <div class="subpage-head centered">
+        <button onclick="switchView('swaps')"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="sp-title-block">
+          <h2>Request Swap</h2>
+          <div class="sp-sub" id="swap-month-label">October 2026</div>
+        </div>
+        <div style="width:36px;"></div>
+      </div>
+      <div class="app-main">
+        <div class="month-nav">
+          <button onclick="changeSwapMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+          <div class="m-label" id="swap-month-label-2">October 2026</div>
+          <button onclick="changeSwapMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+          <div class="cal-days" id="swap-cal-days"><!-- rendered by JS --></div>
+        </div>
+
+        <div class="form-block">
+          <label>Requesting duty swap for</label>
+          <div class="selected-duty-preview" id="swap-selected-preview">Select a date on the calendar above.</div>
+
+          <label for="swap-crew-id">Crew member to swap with</label>
+          <input id="swap-crew-id" type="text" placeholder="Enter Crew ID">
+
+          <div class="details-panel hidden" id="swap-details-panel"></div>
+
+          <div class="btn-row">
+            <button class="btn-outline" onclick="toggleSwapDetails()">Show details</button>
+            <button class="btn-solid" id="swap-confirm-btn" onclick="submitSwapRequest()" disabled>Confirm</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- TRADE BOARD ---------- -->
+    <section id="view-board" class="view hidden">
+      <div class="subpage-head">
+        <button onclick="switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="sp-title-block"><h2>Trade Board</h2></div>
+      </div>
+      <div class="app-main" id="board-list"><!-- rendered by JS --></div>
+    </section>
+
+    <!-- ---------- CHAT ---------- -->
+    <section id="view-chat" class="view hidden">
+      <div class="subpage-head">
+        <button onclick="switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="sp-title-block"><h2>Crew Chat</h2></div>
+      </div>
+      <div class="app-main" id="chat-list"><!-- rendered by JS --></div>
+    </section>
+
+    <!-- ---------- DOCUMENTS ---------- -->
+    <section id="view-documents" class="view hidden">
+      <div class="subpage-head">
+        <button onclick="switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="sp-title-block"><h2>Documents</h2></div>
+      </div>
+      <div class="app-main" id="doc-list"><!-- rendered by JS --></div>
+    </section>
+
+    <!-- ---------- PROFILE ---------- -->
+    <section id="view-profile" class="view hidden">
+      <div class="subpage-head">
+        <button onclick="switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="sp-title-block"><h2>Profile</h2></div>
+      </div>
+      <div class="app-main">
+        <div class="profile-hero">
+          <div class="profile-cover" id="profile-cover" role="img" aria-label="Air India cover photo"></div>
+          <div class="profile-identity">
+            <img class="profile-photo avatar-img-target" src="" alt="Rishabh Tripathi" onclick="document.getElementById('avatar-file-input').click()" title="Tap to change photo">
+            <div class="profile-name">Rishabh Tripathi</div>
+            <div class="profile-rank">First Officer · Air India</div>
+            <div class="profile-meta">
+              <span class="profile-meta-chip">B777</span>
+              <span class="profile-meta-chip">Base: DEL</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-section" id="ps-personal">
+          <div class="profile-section-head" onclick="toggleProfileSection('ps-personal')">
+            <div class="ps-icon"><i class="fa-solid fa-id-card"></i></div>
+            <div class="ps-body">
+              <div class="ps-title">Personal &amp; Service Info</div>
+              <div class="ps-sub">View your employment status, personal data, service details, and contact/family information on record.</div>
+            </div>
+            <i class="fa-solid fa-chevron-right chev"></i>
+          </div>
+          <div class="profile-detail">
+            <div class="profile-detail-photo-row">
+              <img class="profile-detail-photo avatar-img-target" src="" alt="Rishabh Tripathi">
+              <div>
+                <div class="profile-detail-name">Rishabh Tripathi</div>
+                <div class="profile-detail-role">First Officer · Air India</div>
+              </div>
+            </div>
+            <table class="profile-table">
+              <tr><td>Full Name</td><td>Rishabh Tripathi</td></tr>
+              <tr><td>ID No.</td><td>24657463</td></tr>
+              <tr><td>Email</td><td>rishabh.tripathi@airindia.com</td></tr>
+              <tr><td>Phone No.</td><td>+91-9729816903</td></tr>
+              <tr><td>Father's Name</td><td>Mr. Jitender Tripathi</td></tr>
+              <tr><td>Father's Contact</td><td>+91-9781907289</td></tr>
+              <tr><td>Blood Group</td><td>O+</td></tr>
+              <tr><td>CPL No.</td><td>924351</td></tr>
+              <tr><td>Class 1 Medical</td><td>GR-992/2026</td></tr>
+              <tr><td>Medical Valid Until</td><td>15 Sep 2027</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="profile-section" id="ps-checkin">
+          <div class="profile-section-head" onclick="toggleProfileSection('ps-checkin')">
+            <div class="ps-icon"><i class="fa-solid fa-plane-circle-check"></i></div>
+            <div class="ps-body">
+              <div class="ps-title">Check-in Access</div>
+              <div class="ps-sub">Access duty or flight check-in options directly from your profile interface (depending on airline configuration).</div>
+            </div>
+            <i class="fa-solid fa-chevron-right chev"></i>
+          </div>
+          <div class="profile-detail">
+            <div class="checkin-card">
+              <img class="checkin-photo avatar-img-target" src="" alt="Rishabh Tripathi">
+              <div class="checkin-id">
+                <div class="checkin-name">Rishabh Tripathi</div>
+                <div class="checkin-role">First Officer · Air India</div>
+                <div class="checkin-meta">ID 24657463 · CPL 924351</div>
+              </div>
+              <span class="checkin-status">Active</span>
+            </div>
+            <div class="checkin-grid">
+              <div class="checkin-stat"><div class="cs-label">Base</div><div class="cs-value">DEL</div></div>
+              <div class="checkin-stat"><div class="cs-label">Aircraft</div><div class="cs-value">B777</div></div>
+              <div class="checkin-stat"><div class="cs-label">Class 1 Medical</div><div class="cs-value">GR-992/2026</div></div>
+              <div class="checkin-stat"><div class="cs-label">Medical Valid Till</div><div class="cs-value">15 Sep 2027</div></div>
+            </div>
+            <button class="btn-checkin" onclick="showToast('Duty check-in confirmed', 'fa-clipboard-check')"><i class="fa-solid fa-clipboard-check"></i> Duty Check-in</button>
+            <button class="btn-checkin alt" onclick="showToast('Flight check-in confirmed', 'fa-plane-departure')"><i class="fa-solid fa-plane-departure"></i> Flight Check-in</button>
+          </div>
+        </div>
+
+        <div class="profile-section" id="ps-credentials">
+          <div class="profile-section-head" onclick="toggleProfileSection('ps-credentials')">
+            <div class="ps-icon"><i class="fa-solid fa-file-shield"></i></div>
+            <div class="ps-body">
+              <div class="ps-title">Credentials &amp; Documents</div>
+              <div class="ps-sub">Check your tracked qualifications, document expiry statuses, and profile restriction icons.</div>
+            </div>
+            <i class="fa-solid fa-chevron-right chev"></i>
+          </div>
+          <div class="profile-detail">
+            <div class="doc-row">
+              <div class="ic-icon" style="background:#DBF0EC; color:#1E8E75;"><i class="fa-solid fa-circle-check"></i></div>
+              <div>
+                <div class="doc-name">Commercial Pilot Licence (CPL)</div>
+                <div class="doc-exp ok">No. 924351 · No restrictions on record</div>
+              </div>
+            </div>
+            <div class="doc-row" style="margin-bottom:0;">
+              <div class="ic-icon" style="background:#DBF0EC; color:#1E8E75;"><i class="fa-solid fa-circle-check"></i></div>
+              <div>
+                <div class="doc-name">Class 1 Medical (GR-992/2026)</div>
+                <div class="doc-exp ok">Valid until 15 Sep 2027</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-section" id="ps-avatars">
+          <div class="profile-section-head" onclick="toggleProfileSection('ps-avatars')">
+            <div class="ps-icon"><i class="fa-solid fa-image"></i></div>
+            <div class="ps-body">
+              <div class="ps-title">Avatars</div>
+              <div class="ps-sub">View or manage your profile picture/avatar used across flight rosters and crew chats.</div>
+            </div>
+            <i class="fa-solid fa-chevron-right chev"></i>
+          </div>
+          <div class="profile-detail">
+            <div class="avatar-manage">
+              <img class="avatar-manage-photo avatar-img-target" src="" alt="Rishabh Tripathi">
+              <div class="avatar-manage-actions">
+                <button class="btn-solid is-ready" style="flex:1;" onclick="document.getElementById('avatar-file-input').click()">Change Photo</button>
+                <button class="btn-outline" style="flex:1;" onclick="resetAvatarPhoto()">Reset to Default</button>
+              </div>
+              <div class="avatar-manage-note">This photo appears on your dashboard, rosters, crew chats, and check-in credentials.</div>
+              <input type="file" id="avatar-file-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- BOTTOM NAV ---------- -->
+    <nav class="bottom-nav" id="bottom-nav">
+      <button class="nav-btn" data-nav="dashboard" onclick="switchView('dashboard')"><i class="fa-solid fa-house"></i><span>Home</span></button>
+      <button class="nav-btn" data-nav="schedule" onclick="switchView('schedule')"><i class="fa-regular fa-calendar-days"></i><span>Schedule</span></button>
+      <button class="nav-btn" data-nav="swaps" onclick="switchView('swaps')"><i class="fa-solid fa-people-arrows"></i><span>Swaps</span></button>
+      <button class="nav-btn" data-nav="board" onclick="switchView('board')"><i class="fa-solid fa-earth-asia"></i><span>Board</span></button>
+      <button class="nav-btn" data-nav="chat" onclick="switchView('chat')"><i class="fa-regular fa-comments"></i><span>Chat</span></button>
+    </nav>
+  </div>
+
+  <div id="toast"><i class="fa-solid fa-circle-check"></i><span id="toast-text"></span></div>
+
+  <!-- ---------- SETTINGS PANEL ---------- -->
+  <div id="settings-overlay" class="settings-overlay" onclick="if(event.target===this) closeSettings()">
+    <div class="settings-sheet">
+      <div class="settings-handle"></div>
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button class="settings-close" onclick="closeSettings()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="settings-list">
+        <div class="settings-row">
+          <div class="settings-row-icon"><i class="fa-solid fa-circle-half-stroke"></i></div>
+          <div class="settings-row-text">
+            <div class="settings-row-title">Dark Mode</div>
+            <div class="settings-row-sub">Switch between light and dark appearance</div>
+          </div>
+          <label class="theme-switch">
+            <input type="checkbox" id="dark-mode-toggle" onchange="toggleTheme(this.checked)">
+            <span class="theme-slider"></span>
+          </label>
+        </div>
+        <div class="settings-row" onclick="showToast('Opening notification settings', 'fa-bell')">
+          <div class="settings-row-icon"><i class="fa-solid fa-bell"></i></div>
+          <div class="settings-row-text">
+            <div class="settings-row-title">Notifications</div>
+            <div class="settings-row-sub">Manage alerts &amp; reminders</div>
+          </div>
+          <i class="fa-solid fa-chevron-right chev"></i>
+        </div>
+        <div class="settings-row" onclick="showToast('Opening account details', 'fa-user')">
+          <div class="settings-row-icon"><i class="fa-solid fa-user"></i></div>
+          <div class="settings-row-text">
+            <div class="settings-row-title">Account</div>
+            <div class="settings-row-sub">Profile &amp; crew ID details</div>
+          </div>
+          <i class="fa-solid fa-chevron-right chev"></i>
+        </div>
+        <div class="settings-row" onclick="showToast('Opening help & support', 'fa-circle-question')">
+          <div class="settings-row-icon"><i class="fa-solid fa-circle-question"></i></div>
+          <div class="settings-row-text">
+            <div class="settings-row-title">Help &amp; Support</div>
+            <div class="settings-row-sub">FAQs and contact crew scheduling</div>
+          </div>
+          <i class="fa-solid fa-chevron-right chev"></i>
+        </div>
+        <div class="settings-row" onclick="showToast('Signed out', 'fa-right-from-bracket')">
+          <div class="settings-row-icon settings-row-icon-danger"><i class="fa-solid fa-right-from-bracket"></i></div>
+          <div class="settings-row-text">
+            <div class="settings-row-title" style="color:#B23348;">Log Out</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================================
+   CONFIG — EDIT HERE
+   ========================================================================== */
+
+// "Today" is fixed for this demo build so the mock roster lines up sensibly.
+// EDIT HERE if you want "today" to track the real device date instead:
+//   const TODAY = new Date();
+const TODAY = new Date(2026, 7, 22); // August 22, 2026
+
+const CURRENT_USER = {
+  name: "Rishabh Tripathi",
+  role: "First Officer",
+  airline: "Air India",
+  aircraft: "B777",
+  base: "DEL",
+  idNo: "24657463",
+  email: "rishabh.tripathi@airindia.com",
+  phone: "+91-9729816903",
+  fatherName: "Mr. Jitender Tripathi",
+  fatherPhone: "+91-9781907289",
+  bloodGroup: "O+",
+  cplNo: "924351",
+  medicalNo: "GR-992/2026",
+  medicalValid: "15 Sep 2027",
+  photo: "https://i.ibb.co/LdfV1v2s/BED36544-95-E4-4-A45-92-DD-02739-BEAA96-B-1-201-a.jpg",
+  coverPhoto: "https://networkthoughts.com/wp-content/uploads/2023/08/air-india-newlogo-red.jpg"
+};
+
+/* ---- Duty type styling: icon, colors, label ---------------------------- */
+const DUTY_TYPES = {
+  flight:   { icon: "fa-plane-up",         bg: "#FBEAD7", fg: "#E8983F", label: "Flight" },
+  report:   { icon: "fa-right-to-bracket", bg: "#F1E6D4", fg: "#B98A52", label: "Report" },
+  reserve:  { icon: "fa-clock",            bg: "#DBF0EC", fg: "#34A79C", label: "Reserve" },
+  training: { icon: "fa-graduation-cap",   bg: "#EAEAD8", fg: "#8C8C46", label: "Training" },
+  layover:  { icon: "fa-bed",              bg: "#F3E3EC", fg: "#B4507C", label: "Layover" },
+  off:      { icon: "fa-mug-saucer",       bg: "#EFEDF4", fg: "#9AA3B2", label: "Day Off" }
+};
+
+/* ---- Airport reference info (used by the "Report" duty drill-down) -----
+   EDIT HERE to add more airports; DEL is shown by default. */
+const AIRPORTS = {
+  DEL: {
+    name: "Indira Gandhi International Airport",
+    icao: "VIDP", iata: "DEL",
+    city: "New Delhi, India",
+    elevation: "777 ft (237 m)",
+    timezone: "IST (UTC +5:30)",
+    dispatch: "Flight Dispatch Office, Level 2, Cargo Terminal Complex, IGI Airport, New Delhi – 110037",
+    frequencies: [
+      { name:"Tower",         val:"118.1 / 118.7" },
+      { name:"Ground",        val:"121.9" },
+      { name:"ATIS",          val:"128.4" },
+      { name:"Approach",      val:"119.65 / 120.6" },
+      { name:"Delhi Radar",   val:"124.35" },
+      { name:"Company Ops",   val:"131.55" }
+    ]
+  }
+};
+
+/* ---- Crew name pools for the "Flight" duty drill-down -------------------
+   Deterministic per flight number so the same flight always shows the same
+   crew. First Officer slot always includes Rishabh Tripathi, per spec. */
+const CREW_MALE_NAMES   = ["Arjun","Vikram","Rohan","Aditya","Karan","Siddharth","Aakash","Nikhil","Varun","Rahul","Aman","Yash","Kabir","Ishaan"];
+const CREW_FEMALE_NAMES = ["Priya","Ananya","Kavya","Diya","Isha","Meera","Sneha","Riya","Tanvi","Aisha","Neha","Pooja","Sanya","Anjali","Divya","Shreya","Nisha","Kritika"];
+const CREW_LAST_NAMES   = ["Sharma","Verma","Reddy","Nair","Menon","Iyer","Gupta","Kapoor","Malhotra","Chauhan","Rao","Pillai","Bhatt","Joshi","Desai","Kulkarni","Singh","Chatterjee","Mukherjee","Bose"];
+
+function hashStr(str){
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+  return Math.abs(h) || 1;
+}
+function seededRand(seed){
+  let s = seed % 2147483647;
+  if (s <= 0) s += 2147483646;
+  return function(){ s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+}
+function generateCrew(flightNo){
+  const rand = seededRand(hashStr(flightNo || "DEFAULT"));
+  const used = new Set(["Rishabh Tripathi"]);
+  function uniqueName(pool){
+    let name, tries = 0;
+    do {
+      name = `${pool[Math.floor(rand() * pool.length)]} ${CREW_LAST_NAMES[Math.floor(rand() * CREW_LAST_NAMES.length)]}`;
+      tries++;
+    } while (used.has(name) && tries < 25);
+    used.add(name);
+    return name;
+  }
+  const anyPool = CREW_MALE_NAMES.concat(CREW_FEMALE_NAMES);
+  const cockpit = [
+    { role:"Captain",        name: uniqueName(anyPool) },
+    { role:"Captain",        name: uniqueName(anyPool) },
+    { role:"First Officer",  name: "Rishabh Tripathi" },
+    { role:"First Officer",  name: uniqueName(anyPool) }
+  ];
+
+  // 1 lead + 14 cabin crew, girls outnumbering boys (9 female / 6 male overall)
+  const cabin = [{ role:"Lead Cabin Crew", name: uniqueName(CREW_FEMALE_NAMES) }];
+  const genders = [..."FFFFFFFF".split(""), ..."MMMMMM".split("")]; // 8F + 6M for the remaining 14
+  for (let i = genders.length - 1; i > 0; i--){
+    const j = Math.floor(rand() * (i + 1));
+    [genders[i], genders[j]] = [genders[j], genders[i]];
+  }
+  genders.forEach(g => cabin.push({ role:"Cabin Crew", name: uniqueName(g === "F" ? CREW_FEMALE_NAMES : CREW_MALE_NAMES) }));
+
+  return { cockpit, cabin };
+}
+function initials(name){
+  return name.split(" ").filter(Boolean).slice(0,2).map(p => p[0]).join("").toUpperCase();
+}
+
+/* ---- ROSTER DATA ---------------------------------------------------------
+   Add a roster by copying one date line below. Each date uses YYYY-MM-DD
+   and may contain one or more duty items. Supported types are flight,
+   report, reserve, training, layover, and off. */
+const ROSTER = {
+  // Example new entry: "2026-09-01": [{type:"flight", flightNo:"AI123", dep:"DEL", arr:"BOM", depTime:"08:00", arrTime:"10:10"}],
+  "2026-08-22": [{type:"off", note:"Rest"}],
+  "2026-08-23": [{type:"off", note:"Rest"}],
+  "2026-08-24": [
+    {type:"flight", flightNo:"AI2417", dep:"VIDP", arr:"VOBL", depTime:"13:00", arrTime:"15:55", airtime:"02h 55m", note:"Crew Portal available"},
+    {type:"flight", flightNo:"AIC2488", dep:"VOBL", arr:"VIDP", depTime:"16:30", arrTime:"18:45", airtime:"02h 15m", note:"Crew Portal available"}
+  ],
+  "2026-08-25": [{type:"training", location:"T3", start:"13:00", end:"18:00", note:"Cockpit visit"}],
+  "2026-08-26": [
+    {type:"flight", flightNo:"AI887", dep:"DEL", arr:"BOM", depTime:"13:30", arrTime:"15:45", airtime:"02h 15m", note:"Terminal 3 → Terminal 2 · Indira Gandhi International Airport to Chhatrapati Shivaji Maharaj International Airport"},
+    {type:"flight", flightNo:"AI687", dep:"BOM", arr:"DEL", depTime:"17:30", arrTime:"19:45", airtime:"02h 15m", note:"Terminal 2 → Terminal 3"}
+  ],
+  "2026-08-27": [{type:"training", location:"Air India Training Academy", start:"12:00", end:"18:00", note:"CAE Crew Access software training"}],
+  "2026-08-28": [{type:"training", location:"T3", start:"13:00", end:"18:00", note:"Cockpit visit · same roster"}],
+  "2026-08-29": [{type:"training", location:"T3", start:"13:00", end:"18:00", note:"Cockpit visit · same roster"}]
+};
+// Existing screen code reads this alias; keep it when adding roster entries.
+const SCHEDULE = ROSTER;
+
+/* ---- Mock duty swap requests -------------------------------------------
+   direction: "incoming" (someone asked YOU) / "outgoing" (you requested) */
+let SWAPS = [
+  { id:1, direction:"incoming", status:"pending",  date:"2026-11-07", route:"DEL → BOM · AI401", counterparty:"Harriet Hughes", crewId:"CA2231", note:"Family event, can trade my Nov 10 DXB turn if that helps." },
+  { id:2, direction:"outgoing", status:"pending",  date:"2026-09-19", route:"DEL → DXB · AI945", counterparty:"Marcus Lee",    crewId:"CA1188", note:"" },
+  { id:3, direction:"outgoing", status:"accepted", date:"2026-08-15", route:"DEL Training",       counterparty:"Priya Menon",   crewId:"CA1042", note:"" }
+];
+let swapIdCounter = 4;
+
+/* ---- Mock trade board ---------------------------------------------------*/
+const TRADE_BOARD = [
+  { route:"DEL → LHR · AI131", date:"08 Sep 2026", postedBy:"Arjun Nair (CA3310)", note:"Open trip, looking for a same-week DEL–BOM instead." },
+  { route:"BOM → SIN · AI132", date:"14 Sep 2026", postedBy:"Kavya Reddy (CA2765)", note:"Willing to trade for any DXB turn." },
+  { route:"DEL Reserve (3-day)", date:"21 Sep 2026", postedBy:"Sameer Khan (CA1904)", note:"Reserve block open to any qualified B777 captain." }
+];
+
+/* ---- Mock chat threads ---------------------------------------------------*/
+const CHATS = [
+  { name:"Crew Scheduling", initials:"CS", preview:"Your Nov 7 swap request has been received.", time:"9:41 AM" },
+  { name:"Harriet Hughes", initials:"HH", preview:"Thanks for considering the trade!", time:"Yesterday" },
+  { name:"Base Ops – DEL", initials:"BO", preview:"Gate change for AI131: now T3 Gate 22.", time:"Mon" }
+];
+
+/* ---- Mock documents -------------------------------------------------------*/
+const DOCUMENTS = [
+  { name:"ATPL — Airline Transport Pilot License", expiry:"05 Sep 2026", warn:true },
+  { name:"Medical Certificate (Class 1)",           expiry:"18 Sep 2026", warn:true },
+  { name:"Passport",                                expiry:"29 Sep 2026", warn:true },
+  { name:"B777 Type Rating",                        expiry:"12 Mar 2027", warn:false },
+  { name:"CRM / Dangerous Goods Training",           expiry:"01 Jun 2027", warn:false }
+];
+
+/* ==========================================================================
+   STATE
+   ========================================================================== */
+let scheduleViewMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+let scheduleSelectedDate = fmt(TODAY);
+let swapViewMonth = new Date(TODAY.getFullYear(), TODAY.getMonth() + 2, 1); // Oct 2026 default, mirrors reference design
+let swapSelectedDate = null;
+let swapTab = "incoming";
+
+/* ==========================================================================
+   UTILITIES
+   ========================================================================== */
+function fmt(dateObj){
+  return `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,"0")}-${String(dateObj.getDate()).padStart(2,"0")}`;
+}
+function prettyDate(dateStr, opts){
+  const [y,m,dd] = dateStr.split("-").map(Number);
+  const dt = new Date(y, m-1, dd);
+  return dt.toLocaleDateString("en-US", opts || { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+}
+function showToast(text, icon){
+  const t = document.getElementById("toast");
+  document.getElementById("toast-text").textContent = text;
+  t.querySelector("i").className = "fa-solid " + (icon || "fa-circle-check");
+  t.classList.add("show");
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(()=> t.classList.remove("show"), 2600);
+}
+function dutyMeta(type){ return DUTY_TYPES[type] || DUTY_TYPES.off; }
+
+/* ==========================================================================
+   THEME — dark / light mode (toggled from Settings)
+   ========================================================================== */
+function getSavedTheme(){
+  try{ return localStorage.getItem("skylink-theme") || "light"; }
+  catch(e){ return "light"; }
+}
+function applyTheme(mode){
+  if (mode === "dark") document.documentElement.setAttribute("data-theme", "dark");
+  else document.documentElement.removeAttribute("data-theme");
+  const toggle = document.getElementById("dark-mode-toggle");
+  if (toggle) toggle.checked = (mode === "dark");
+}
+function toggleTheme(isDark){
+  const mode = isDark ? "dark" : "light";
+  applyTheme(mode);
+  try{ localStorage.setItem("skylink-theme", mode); }catch(e){}
+  showToast(isDark ? "Dark mode enabled" : "Light mode enabled", isDark ? "fa-moon" : "fa-sun");
+}
+
+/* ==========================================================================
+   SETTINGS PANEL
+   ========================================================================== */
+function openSettings(){
+  applyTheme(getSavedTheme());
+  document.getElementById("settings-overlay").classList.add("show");
+}
+function closeSettings(){
+  document.getElementById("settings-overlay").classList.remove("show");
+}
+
+/* ==========================================================================
+   PROFILE VIEW — expandable sections
+   ========================================================================== */
+function toggleProfileSection(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  const willExpand = !el.classList.contains("expanded");
+  document.querySelectorAll(".profile-section.expanded").forEach(s => { if (s.id !== id) s.classList.remove("expanded"); });
+  el.classList.toggle("expanded", willExpand);
+}
+
+/* ==========================================================================
+   AVATAR — profile picture, changeable from the Avatars section
+   ========================================================================== */
+function getSavedAvatar(){
+  try{ return localStorage.getItem("skylink-avatar"); }
+  catch(e){ return null; }
+}
+function applyAvatarToDOM(src){
+  document.querySelectorAll(".avatar-img-target").forEach(img => img.src = src);
+}
+function loadProfileCover(){
+  const cover = document.getElementById("profile-cover");
+  if (cover) cover.style.backgroundImage = `url("${CURRENT_USER.coverPhoto}")`;
+}
+function loadAvatar(){
+  applyAvatarToDOM(getSavedAvatar() || CURRENT_USER.photo);
+}
+function handleAvatarUpload(event){
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const dataUrl = e.target.result;
+    applyAvatarToDOM(dataUrl);
+    try{ localStorage.setItem("skylink-avatar", dataUrl); }catch(err){}
+    showToast("Profile photo updated", "fa-image");
+  };
+  reader.readAsDataURL(file);
+  event.target.value = "";
+}
+function resetAvatarPhoto(){
+  applyAvatarToDOM(CURRENT_USER.photo);
+  try{ localStorage.removeItem("skylink-avatar"); }catch(e){}
+  showToast("Profile photo reset to default", "fa-rotate-left");
+}
+
+/* ==========================================================================
+   APP INIT — the app opens straight on the Dashboard, no login required
+   ========================================================================== */
+function init(){
+  applyTheme(getSavedTheme());
+  loadAvatar();
+  loadProfileCover();
+  document.getElementById("dash-date-title").textContent = TODAY.toLocaleDateString("en-US", { weekday:"long", day:"numeric", month:"short" });
+  renderDashboard();
+  switchView("dashboard");
+}
+init();
+
+/* ==========================================================================
+   VIEW ROUTER
+   ========================================================================== */
+function switchView(name){
+  document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+  document.getElementById("view-" + name).classList.remove("hidden");
+
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.nav === name));
+  document.getElementById("bottom-nav").classList.toggle("hidden", name === "swap-request");
+
+  if (name === "schedule") renderScheduleCalendar();
+  if (name === "swaps") renderSwapList();
+  if (name === "board") renderTradeBoard();
+  if (name === "chat") renderChat();
+  if (name === "documents") renderDocuments();
+  if (name === "dashboard") renderDashboard();
+}
+
+/* ==========================================================================
+   DASHBOARD
+   ========================================================================== */
+function findTodayRosterItem(){
+  const date = fmt(TODAY);
+  const items = SCHEDULE[date] || [];
+  // An empty date is treated as Rest, so the dashboard always reflects today.
+  return { date, item: items[0] || { type:"off", note:"Rest" } };
+}
+
+function renderDashboard(){
+  const next = findTodayRosterItem();
+  const card = document.getElementById("up-next-card");
+
+  {
+    const { date, item } = next;
+    const isFlight = item.type === "flight";
+    const isRest = item.type === "off";
+    const meta = dutyMeta(item.type);
+    card.innerHTML = `
+      <div class="upnext-top">
+        <span class="upnext-label">Today's Roster</span>
+        <span class="upnext-status ${isRest ? "unpublished" : "published"}">${isRest ? "Rest day" : "Published"}</span>
+      </div>
+      <div class="upnext-duty">${isFlight ? item.flightNo : (isRest ? (item.note || "Rest") : meta.label + " (" + meta.label.toUpperCase() + ")")}</div>
+      ${isFlight ? `
+        <div class="upnext-route">
+          <div class="up-pt"><div class="code">${item.dep}</div><div class="time">${item.depTime}</div></div>
+          <div class="up-line"><i class="fa-solid fa-plane"></i></div>
+          <div class="up-pt"><div class="code">${item.arr}</div><div class="time">${item.arrTime}</div></div>
+        </div>
+        <div class="upnext-grid">
+          <div class="up-field"><div class="up-field-label">Location</div><div class="up-field-value">${item.dep}</div></div>
+          <div class="up-field"><div class="up-field-label">Start</div><div class="up-field-value">${item.depTime}</div></div>
+          <div class="up-field"><div class="up-field-label">End</div><div class="up-field-value">${item.arrTime}</div></div>
+        </div>` : isRest ? `
+        <div class="upnext-grid">
+          <div class="up-field"><div class="up-field-label">Status</div><div class="up-field-value">No duties scheduled</div></div>
+          <div class="up-field"><div class="up-field-label">Date</div><div class="up-field-value">${prettyDate(date, {day:"numeric", month:"short"})}</div></div>
+        </div>` : `
+        <div class="upnext-grid">
+          <div class="up-field"><div class="up-field-label">Location</div><div class="up-field-value">${item.location || CURRENT_USER.base}</div></div>
+          <div class="up-field"><div class="up-field-label">Start</div><div class="up-field-value">${item.start || "00:00"}</div></div>
+          <div class="up-field"><div class="up-field-label">End</div><div class="up-field-value">${item.end || "00:00"}</div></div>
+        </div>`
+      }`;
+  }
+
+  // badges
+  const pendingIncoming = SWAPS.filter(s => s.direction === "incoming" && s.status === "pending").length;
+  document.getElementById("badge-swaps").textContent = pendingIncoming;
+  document.getElementById("badge-swaps").style.display = pendingIncoming ? "flex" : "none";
+  const upcomingDutyDays = Object.entries(SCHEDULE)
+    .filter(([date, items]) => date >= fmt(TODAY) && items.some(item => item.type !== "off"))
+    .length;
+  const scheduleBadge = document.getElementById("badge-schedule");
+  scheduleBadge.textContent = upcomingDutyDays > 9 ? "9+" : upcomingDutyDays;
+  scheduleBadge.style.display = upcomingDutyDays ? "flex" : "none";
+
+  // incoming swap preview on dashboard
+  const preview = document.getElementById("dash-swap-preview");
+  const nextIncoming = SWAPS.find(s => s.direction === "incoming" && s.status === "pending");
+  if (nextIncoming){
+    preview.innerHTML = `
+      <div class="info-card" onclick="switchView('swaps')" style="cursor:pointer;">
+        <div class="ic-icon" style="background:#FBEAD7; color:#E8983F;"><i class="fa-solid fa-people-arrows"></i></div>
+        <div class="ic-body">
+          <div class="ic-title">Duty Swaps</div>
+          <div class="ic-sub">New request: ${prettyDate(nextIncoming.date, {day:"2-digit", month:"short", year:"numeric"})} — ${nextIncoming.counterparty}</div>
+        </div>
+        <i class="fa-solid fa-chevron-right chev"></i>
+      </div>`;
+  } else {
+    preview.innerHTML = "";
+  }
+}
+
+/* ==========================================================================
+   SCHEDULE / CALENDAR
+   ========================================================================== */
+function buildCalendarGrid(monthDate, opts){
+  // opts: { selected, eventsMap, onSelectFn }
+  const year = monthDate.getFullYear(), month = monthDate.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  let html = "";
+  for (let i = 0; i < firstDay; i++) html += `<div class="cal-cell empty"></div>`;
+
+  for (let day = 1; day <= daysInMonth; day++){
+    const dateStr = fmt(new Date(year, month, day));
+    const isToday = dateStr === fmt(TODAY);
+    const isSelected = dateStr === opts.selected;
+    const events = (opts.eventsMap && opts.eventsMap[dateStr]) || [];
+    const primary = events.find(e => e.type !== "off") || events[0];
+    let iconHtml = "", codeHtml = "", underline = "";
+    if (primary){
+      const meta = dutyMeta(primary.type);
+      iconHtml = `<i class="fa-solid ${meta.icon} cal-ico" style="color:${isSelected ? '#fff' : meta.fg};"></i>`;
+      codeHtml = `<span class="cal-code">${primary.type === "flight" ? primary.arr : (primary.location || "")}</span>`;
+      if (primary.type === "flight" || primary.type === "layover") underline = `<span class="cal-underline"></span>`;
+    }
+    html += `
+      <button class="cal-cell ${isToday ? "today" : ""} ${isSelected ? "selected" : ""}"
+              onclick="${opts.onSelectFn}('${dateStr}')">
+        <span>${day}</span>${iconHtml}${codeHtml}${underline}
+      </button>`;
+  }
+  return html;
+}
+
+function renderScheduleCalendar(){
+  const label = scheduleViewMonth.toLocaleDateString("en-US", { month:"long", year:"numeric" });
+  document.getElementById("sched-month-label").textContent = label;
+  document.getElementById("sched-header-label").textContent = label;
+  document.getElementById("sched-cal-days").innerHTML =
+    buildCalendarGrid(scheduleViewMonth, { selected: scheduleSelectedDate, eventsMap: SCHEDULE, onSelectFn: "selectScheduleDate" });
+  renderDayDetail(scheduleSelectedDate);
+  renderScheduleStats();
+  renderScheduleLegend();
+  updateTodayButton();
+  if (scheduleMode === "list") renderScheduleAgenda();
+}
+function changeMonth(delta){
+  scheduleViewMonth = new Date(scheduleViewMonth.getFullYear(), scheduleViewMonth.getMonth() + delta, 1);
+  renderScheduleCalendar();
+}
+function selectScheduleDate(dateStr){
+  scheduleSelectedDate = dateStr;
+  renderScheduleCalendar();
+}
+
+function renderDayDetail(dateStr){
+  const box = document.getElementById("sched-day-detail");
+  const items = SCHEDULE[dateStr] || [];
+  const hasFlightOrDuty = items.some(i => i.type !== "off");
+
+  let head = `
+    <div class="day-detail-head">
+      <div class="dd-date">${prettyDate(dateStr, {weekday:"long", day:"numeric", month:"long"})}</div>
+      ${hasFlightOrDuty ? `<span class="dd-flag published"><i class="fa-solid fa-circle-check"></i> Published</span>` : ""}
+    </div>`;
+
+  if (!items.length){
+    box.innerHTML = head + `<div class="empty-state"><i class="fa-regular fa-calendar"></i><p>No duties scheduled — day off.</p></div>`;
+    return;
+  }
+  if (items.length === 1 && items[0].type === "off"){
+    box.innerHTML = head + `<div class="empty-state"><i class="fa-solid fa-mug-saucer"></i><p>${items[0].note || "Day off"}. Enjoy the rest!</p></div>`;
+    return;
+  }
+  box.innerHTML = head + buildDutyRowsHTML(items, dateStr, "");
+}
+
+/* ---- Shared duty-row builder, reused by the day panel AND the agenda/list
+   view so both stay visually and behaviorally identical. ---------------- */
+function buildDutyRowsHTML(items, dateStr, keyPrefix){
+  let rows = "";
+  items.forEach((item, idx) => {
+    const meta = dutyMeta(item.type);
+    const key = `${keyPrefix}${dateStr}__${idx}`;
+    let title, gridHtml = "", noteHtml = "", clickable = false, expandHtml = "";
+
+    if (item.type === "flight"){
+      title = `${item.flightNo} · ${item.dep} → ${item.arr}`;
+      gridHtml = `
+        <div class="di-grid">
+          <div class="di-col"><div class="di-label">Departs</div><div class="di-value">${item.dep} ${item.depTime}</div></div>
+          <div class="di-col arrow"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="di-col"><div class="di-label">Arrives</div><div class="di-value">${item.arr} ${item.arrTime}</div></div>
+        </div>`;
+      const airtime = item.airtime || fmtHrsMins(flightDurationMinutes(item));
+      noteHtml = `<div class="di-note">Airtime · ${airtime}${item.note ? ` · ${item.note}` : ""}</div>`;
+      clickable = true;
+      expandHtml = buildCrewListHTML(item);
+    } else if (item.type === "report"){
+      title = meta.label;
+      gridHtml = `
+        <div class="di-grid">
+          <div class="di-col"><div class="di-label">Location</div><div class="di-value">${item.location || CURRENT_USER.base}</div></div>
+          <div class="di-col"><div class="di-label">Start</div><div class="di-value">${item.start || ""}</div></div>
+          <div class="di-col"><div class="di-label">End</div><div class="di-value">${item.end || ""}</div></div>
+        </div>`;
+      clickable = true;
+      expandHtml = buildAirportInfoHTML(item.location);
+    } else if (item.type === "reserve"){
+      title = meta.label;
+      gridHtml = `
+        <div class="di-grid">
+          <div class="di-col"><div class="di-label">Location</div><div class="di-value">${item.location || CURRENT_USER.base}</div></div>
+          <div class="di-col"><div class="di-label">Start</div><div class="di-value">${item.start || ""}</div></div>
+          <div class="di-col"><div class="di-label">End</div><div class="di-value">${item.end || ""}</div></div>
+        </div>`;
+      clickable = false; // reserve intentionally has no drill-down detail
+    } else if (item.type === "layover"){
+      title = `Layover · ${item.location}`;
+      noteHtml = `<div class="di-note">${item.note || "Rest period"}</div>`;
+      clickable = false;
+    } else if (item.type === "off"){
+      title = item.note || "Day Off";
+      noteHtml = item.note ? `<div class="di-note">Day off</div>` : "";
+      clickable = false;
+    } else {
+      title = `${meta.label} · ${item.location || CURRENT_USER.base}`;
+      gridHtml = `
+        <div class="di-grid">
+          <div class="di-col"><div class="di-label">Location</div><div class="di-value">${item.location || CURRENT_USER.base}</div></div>
+          <div class="di-col"><div class="di-label">Start</div><div class="di-value">${item.start || ""}</div></div>
+          <div class="di-col"><div class="di-label">End</div><div class="di-value">${item.end || ""}</div></div>
+        </div>`;
+      if (item.note) noteHtml = `<div class="di-note">${item.note}</div>`;
+      clickable = false;
+    }
+
+    rows += `
+      <div class="duty-wrap">
+        <div class="duty-item ${clickable ? "clickable" : ""}" data-key="${key}" style="border-left-color:${meta.fg};"
+             ${clickable ? `onclick="toggleDutyDetail('${key}')"` : ""}>
+          <div class="di-icon" style="color:${meta.fg};"><i class="fa-solid ${meta.icon}"></i></div>
+          <div class="di-body">
+            <div class="di-title">${title}</div>
+            ${gridHtml}
+            ${noteHtml}
+          </div>
+          ${clickable ? `<i class="fa-solid fa-chevron-right chev"></i>` : ""}
+        </div>
+        ${clickable ? `<div class="duty-expand" id="exp-${key}"><div class="duty-expand-inner"><div class="duty-expand-card">${expandHtml}</div></div></div>` : ""}
+      </div>`;
+  });
+  return rows;
+}
+
+/* ==========================================================================
+   SCHEDULE ENHANCEMENTS — roster stats, legend, Month/List toggle,
+   "Today" jump, and swipe-to-change-month (CAE Crew Roster–inspired)
+   ========================================================================== */
+let scheduleMode = "month";
+
+function timeToMinutes(t){
+  const [h, m] = (t || "0:0").split(":").map(Number);
+  return h * 60 + m;
+}
+function flightDurationMinutes(item){
+  let diff = timeToMinutes(item.arrTime) - timeToMinutes(item.depTime);
+  if (diff < 0) diff += 24 * 60; // crosses midnight
+  return diff;
+}
+function fmtHrsMins(totalMinutes){
+  const h = Math.floor(totalMinutes / 60), m = Math.round(totalMinutes % 60);
+  return `${h}h ${String(m).padStart(2,"0")}m`;
+}
+function computeMonthStats(monthDate){
+  const year = monthDate.getFullYear(), month = monthDate.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  let flights = 0, dutyDays = 0, daysOff = 0, blockMinutes = 0;
+  for (let day = 1; day <= daysInMonth; day++){
+    const items = SCHEDULE[fmt(new Date(year, month, day))];
+    if (!items || !items.length) continue;
+    if (items.length === 1 && items[0].type === "off"){ daysOff++; continue; }
+    dutyDays++;
+    items.forEach(it => { if (it.type === "flight"){ flights++; blockMinutes += flightDurationMinutes(it); } });
+  }
+  return { flights, dutyDays, daysOff, blockMinutes };
+}
+function renderScheduleStats(){
+  const s = computeMonthStats(scheduleViewMonth);
+  document.getElementById("sched-stats").innerHTML = `
+    <div class="stat-chip"><div class="stat-num">${s.flights}</div><div class="stat-lbl">Flights</div></div>
+    <div class="stat-chip"><div class="stat-num">${s.dutyDays}</div><div class="stat-lbl">Duty Days</div></div>
+    <div class="stat-chip"><div class="stat-num">${fmtHrsMins(s.blockMinutes)}</div><div class="stat-lbl">Block Time</div></div>
+    <div class="stat-chip"><div class="stat-num">${s.daysOff}</div><div class="stat-lbl">Days Off</div></div>`;
+}
+function renderScheduleLegend(){
+  const order = ["flight","report","reserve","training","layover","off"];
+  document.getElementById("sched-legend").innerHTML = order.map(k => {
+    const m = DUTY_TYPES[k];
+    return `<div class="legend-chip"><span class="legend-dot" style="background:${m.fg};"></span>${m.label}</div>`;
+  }).join("");
+}
+function setScheduleMode(mode){
+  scheduleMode = mode;
+  document.querySelectorAll("#sched-view-toggle .vt-btn").forEach(b => b.classList.toggle("active", b.dataset.mode === mode));
+  document.getElementById("sched-month-view").classList.toggle("hidden", mode !== "month");
+  document.getElementById("sched-list-view").classList.toggle("hidden", mode !== "list");
+  if (mode === "list") renderScheduleAgenda();
+}
+function updateTodayButton(){
+  const btn = document.getElementById("sched-today-btn");
+  const isCurrentMonth = scheduleViewMonth.getFullYear() === TODAY.getFullYear() && scheduleViewMonth.getMonth() === TODAY.getMonth();
+  btn.classList.toggle("hidden", isCurrentMonth);
+}
+function jumpToToday(){
+  scheduleViewMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+  scheduleSelectedDate = fmt(TODAY);
+  renderScheduleCalendar();
+}
+function renderScheduleAgenda(){
+  const year = scheduleViewMonth.getFullYear(), month = scheduleViewMonth.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  let html = "";
+  for (let day = 1; day <= daysInMonth; day++){
+    const dateStr = fmt(new Date(year, month, day));
+    const items = SCHEDULE[dateStr];
+    if (!items || !items.length) continue;
+    const isToday = dateStr === fmt(TODAY);
+    html += `<div class="agenda-date-label ${isToday ? "is-today" : ""}">${prettyDate(dateStr, {weekday:"short", day:"numeric", month:"short"})}</div>`;
+    html += buildDutyRowsHTML(items, dateStr, "L-");
+  }
+  document.getElementById("sched-list-view").innerHTML = html ||
+    `<div class="empty-state"><i class="fa-regular fa-calendar"></i><p>No roster data for this month.</p></div>`;
+}
+
+/* Swipe left/right on the calendar to move a month, like a native roster app */
+(function initScheduleSwipe(){
+  let startX = null, startY = null;
+  const target = document.getElementById("sched-cal-wrap");
+  target.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+  }, { passive:true });
+  target.addEventListener("touchend", e => {
+    if (startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.5) changeMonth(dx < 0 ? 1 : -1);
+    startX = null; startY = null;
+  }, { passive:true });
+})();
+
+/* ---- Slide-open detail panel: crew list (flights) / airport info (report) */
+function toggleDutyDetail(key){
+  const panel = document.getElementById("exp-" + key);
+  const header = document.querySelector(`.duty-item[data-key="${key}"]`);
+  if (!panel) return;
+  const isOpen = panel.classList.contains("open");
+
+  // accordion behavior: close any other open panel first
+  document.querySelectorAll(".duty-expand.open").forEach(el => {
+    if (el.id !== "exp-" + key){ el.classList.remove("open"); el.style.maxHeight = null; }
+  });
+  document.querySelectorAll(".duty-item.expanded").forEach(el => {
+    if (el.dataset.key !== key) el.classList.remove("expanded");
+  });
+
+  if (isOpen){
+    panel.classList.remove("open");
+    panel.style.maxHeight = null;
+    header && header.classList.remove("expanded");
+  } else {
+    panel.classList.add("open");
+    panel.style.maxHeight = panel.scrollHeight + "px";
+    header && header.classList.add("expanded");
+  }
+}
+
+function buildCrewListHTML(item){
+  const { cockpit, cabin } = generateCrew(item.flightNo);
+  const rowsHtml = (arr) => arr.map(c => `
+    <div class="crew-row">
+      <div class="crew-avatar">${initials(c.name)}</div>
+      <div><div class="crew-name">${c.name}</div><div class="crew-role">${c.role}</div></div>
+    </div>`).join("");
+  return `
+    <div class="crew-section-label">Crew Portal · Cockpit Crew</div>
+    ${rowsHtml(cockpit)}
+    <div class="crew-section-label second">Cabin Crew</div>
+    ${rowsHtml(cabin)}`;
+}
+
+function buildAirportInfoHTML(locationCode){
+  const airport = AIRPORTS[locationCode] || AIRPORTS.DEL;
+  const freqRows = airport.frequencies.map(f => `
+    <div class="freq-row"><span class="freq-name">${f.name}</span><span class="freq-val">${f.val}</span></div>`).join("");
+  return `
+    <div class="airport-head">
+      <div class="airport-code-badge">${airport.iata}</div>
+      <div>
+        <div class="airport-name">${airport.name}</div>
+        <div class="airport-sub">${airport.city}</div>
+      </div>
+    </div>
+    <div class="airport-grid">
+      <div class="airport-field"><div class="af-label">ICAO / IATA</div><div class="af-value">${airport.icao} / ${airport.iata}</div></div>
+      <div class="airport-field"><div class="af-label">Elevation</div><div class="af-value">${airport.elevation}</div></div>
+      <div class="airport-field"><div class="af-label">Time Zone</div><div class="af-value">${airport.timezone}</div></div>
+      <div class="airport-field"><div class="af-label">Dispatch Office</div><div class="af-value" style="font-family:var(--font-body); font-weight:500;">${airport.dispatch}</div></div>
+    </div>
+    <div class="crew-section-label">Frequencies</div>
+    ${freqRows}`;
+}
+
+/* ==========================================================================
+   DUTY SWAPS
+   ========================================================================== */
+function setSwapTab(tab){
+  swapTab = tab;
+  document.getElementById("tab-incoming").classList.toggle("active", tab === "incoming");
+  document.getElementById("tab-outgoing").classList.toggle("active", tab === "outgoing");
+  renderSwapList();
+}
+
+function renderSwapList(){
+  const list = document.getElementById("swap-list");
+  const items = SWAPS.filter(s => s.direction === swapTab);
+  if (!items.length){
+    list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-people-arrows"></i><p>No ${swapTab === "incoming" ? "incoming" : "outgoing"} swap requests.</p></div>`;
+    return;
+  }
+  list.innerHTML = items.map(s => `
+    <div class="swap-card">
+      <div class="swap-card-top">
+        <div>
+          <div class="swap-route">${s.route}</div>
+          <div class="swap-date">${prettyDate(s.date, {day:"2-digit", month:"short", year:"numeric"})}</div>
+        </div>
+        <span class="status-chip ${s.status}">${s.status}</span>
+      </div>
+      <div class="swap-people">${s.direction === "incoming" ? "Requested by" : "Swap with"} <b>${s.counterparty}</b> · ${s.crewId}</div>
+      ${s.note ? `<div class="swap-people" style="margin-top:6px;">"${s.note}"</div>` : ""}
+      ${s.status === "pending" && s.direction === "incoming" ? `
+        <div class="swap-actions">
+          <button class="btn-sm accept" onclick="respondSwap(${s.id}, 'accepted')">Accept</button>
+          <button class="btn-sm decline" onclick="respondSwap(${s.id}, 'declined')">Decline</button>
+        </div>` : ""}
+      ${s.status === "pending" && s.direction === "outgoing" ? `
+        <div class="swap-actions">
+          <button class="btn-sm cancel" onclick="respondSwap(${s.id}, 'declined')">Cancel request</button>
+        </div>` : ""}
+    </div>
+  `).join("");
+}
+
+function respondSwap(id, newStatus){
+  const s = SWAPS.find(x => x.id === id);
+  if (!s) return;
+  s.status = newStatus;
+  renderSwapList();
+  renderDashboard();
+  showToast(newStatus === "accepted" ? "Swap accepted" : (s.direction === "outgoing" ? "Request cancelled" : "Swap declined"),
+            newStatus === "accepted" ? "fa-circle-check" : "fa-circle-xmark");
+}
+
+/* ---- New swap request flow (calendar-driven, mirrors reference design) --*/
+function openSwapRequest(){
+  swapSelectedDate = null;
+  document.getElementById("swap-crew-id").value = "";
+  document.getElementById("swap-details-panel").classList.add("hidden");
+  document.getElementById("swap-confirm-btn").disabled = true;
+  document.getElementById("swap-confirm-btn").classList.remove("is-ready");
+  renderSwapCalendar();
+  switchView("swap-request");
+}
+function renderSwapCalendar(){
+  const label = swapViewMonth.toLocaleDateString("en-US", { month:"long", year:"numeric" });
+  document.getElementById("swap-month-label").textContent = label;
+  document.getElementById("swap-month-label-2").textContent = label;
+  document.getElementById("swap-cal-days").innerHTML =
+    buildCalendarGrid(swapViewMonth, { selected: swapSelectedDate, eventsMap: SCHEDULE, onSelectFn: "selectSwapDate" });
+  updateSwapPreview();
+}
+function changeSwapMonth(delta){
+  swapViewMonth = new Date(swapViewMonth.getFullYear(), swapViewMonth.getMonth() + delta, 1);
+  renderSwapCalendar();
+}
+function selectSwapDate(dateStr){
+  swapSelectedDate = dateStr;
+  renderSwapCalendar();
+  validateSwapForm();
+}
+function updateSwapPreview(){
+  const box = document.getElementById("swap-selected-preview");
+  if (!swapSelectedDate){
+    box.innerHTML = "Select a date on the calendar above.";
+    return;
+  }
+  const items = (SCHEDULE[swapSelectedDate] || []).filter(i => i.type !== "off");
+  const label = items.length
+    ? (items[0].type === "flight" ? `${items[0].flightNo} · ${items[0].dep} → ${items[0].arr}` : dutyMeta(items[0].type).label)
+    : "Day off";
+  box.innerHTML = `<b>${prettyDate(swapSelectedDate, {day:"2-digit", month:"short", year:"numeric"})}</b>${label} · 1-day swap · no layovers`;
+}
+function toggleSwapDetails(){
+  const panel = document.getElementById("swap-details-panel");
+  panel.classList.toggle("hidden");
+  if (!panel.classList.contains("hidden")){
+    panel.innerHTML = `
+      Swap requests are reviewed by Crew Scheduling once the receiving pilot accepts.
+      Both duties must match qualification, currency, and duty-time limits before the trade is finalized.
+      You'll be notified in Chat and on the Dashboard as the status changes.`;
+  }
+}
+function validateSwapForm(){
+  const crewId = document.getElementById("swap-crew-id").value.trim();
+  const ready = !!(swapSelectedDate && crewId.length > 0);
+  const btn = document.getElementById("swap-confirm-btn");
+  btn.disabled = !ready;
+  btn.classList.toggle("is-ready", ready);
+}
+document.getElementById("swap-crew-id").addEventListener("input", validateSwapForm);
+
+function submitSwapRequest(){
+  const crewId = document.getElementById("swap-crew-id").value.trim();
+  if (!swapSelectedDate || !crewId) return;
+  const items = (SCHEDULE[swapSelectedDate] || []).filter(i => i.type !== "off");
+  const routeLabel = items.length
+    ? (items[0].type === "flight" ? `${items[0].dep} → ${items[0].arr} · ${items[0].flightNo}` : dutyMeta(items[0].type).label)
+    : "Day off";
+
+  SWAPS.unshift({
+    id: swapIdCounter++,
+    direction: "outgoing",
+    status: "pending",
+    date: swapSelectedDate,
+    route: routeLabel,
+    counterparty: "Pending crew response",
+    crewId: crewId.toUpperCase(),
+    note: ""
+  });
+
+  showToast("Swap request sent", "fa-paper-plane");
+  swapTab = "outgoing";
+  switchView("swaps");
+  setSwapTab("outgoing");
+}
+
+/* ==========================================================================
+   TRADE BOARD
+   ========================================================================== */
+function renderTradeBoard(){
+  document.getElementById("board-list").innerHTML = TRADE_BOARD.map(t => `
+    <div class="trade-card">
+      <div class="trade-top">
+        <div class="trade-route">${t.route}</div>
+        <span class="status-chip pending">${t.date}</span>
+      </div>
+      <div class="trade-by">Posted by ${t.postedBy}</div>
+      <div class="trade-note">${t.note}</div>
+      <button class="btn-offer" onclick="showToast('Offer sent to ${t.postedBy.split(' (')[0]}', 'fa-paper-plane')">Offer a trade</button>
+    </div>
+  `).join("");
+}
+
+/* ==========================================================================
+   CHAT (lightweight — full messaging out of scope for this build)
+   ========================================================================== */
+function renderChat(){
+  document.getElementById("chat-list").innerHTML = CHATS.map(c => `
+    <div class="chat-row" onclick="showToast('Opening conversation with ${c.name}', 'fa-comment')">
+      <div class="chat-avatar">${c.initials}</div>
+      <div>
+        <div class="chat-name">${c.name}</div>
+        <div class="chat-preview">${c.preview}</div>
+      </div>
+      <div class="chat-time">${c.time}</div>
+    </div>
+  `).join("");
+}
+
+/* ==========================================================================
+   DOCUMENTS
+   ========================================================================== */
+function renderDocuments(){
+  document.getElementById("doc-list").innerHTML = DOCUMENTS.map(doc => `
+    <div class="doc-row">
+      <div class="ic-icon" style="background:${doc.warn ? '#FBDFE1' : '#DBF0EC'}; color:${doc.warn ? '#B23348' : '#1E8E75'};">
+        <i class="fa-solid ${doc.warn ? 'fa-triangle-exclamation' : 'fa-circle-check'}"></i>
+      </div>
+      <div>
+        <div class="doc-name">${doc.name}</div>
+        <div class="doc-exp ${doc.warn ? 'warn' : 'ok'}">${doc.warn ? "Expires" : "Valid until"} ${doc.expiry}</div>
+      </div>
+    </div>
+  `).join("");
+}
+</script>
+</body>
+</html>
