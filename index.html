@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>SkyLink Crew | Flight Deck</title>
+<title>CAE Crew Access</title>
 
 <!-- Icon library: Font Awesome Free 6 (open source, CDN) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -671,6 +671,115 @@ input{ font-family:inherit; }
 }
 .theme-switch input:checked + .theme-slider{ background:var(--navy); }
 .theme-switch input:checked + .theme-slider::before{ transform:translateX(18px); }
+
+/* =====================================================================
+   CAE CREW ACCESS VISUAL SYSTEM
+   Final presentation layer; behavior and data structures remain unchanged.
+   ===================================================================== */
+:root{
+  --bg:#FFFFFF;
+  --bg-outer:#ECEBF1;
+  --surface:#FFFFFF;
+  --card:#F0EFF4;
+  --card-alt:#F5F4F7;
+  --ink:#435568;
+  --ink-soft:#596879;
+  --ink-muted:#9AA2AE;
+  --navy:#435568;
+  --red:#FF5264;
+  --orange:#E89B3E;
+  --teal:#28B4AA;
+  --line:#E6E4EB;
+  --radius-lg:20px;
+  --radius-md:14px;
+  --radius-sm:10px;
+  --font-display:'Inter',sans-serif;
+}
+body{ background:var(--bg-outer); }
+#app-root{ box-shadow:none; }
+.app-main{ padding:14px 16px 18px; }
+.app-header,
+.subpage-head{
+  color:var(--ink); background:var(--surface); border-bottom:none; box-shadow:none;
+}
+.app-header{ padding:14px 16px 13px; }
+.subpage-head{ min-height:65px; padding:13px 16px 11px; }
+.header-date,.subpage-head h2{ color:var(--ink); letter-spacing:.1px; }
+.header-date{ font-size:15px; font-weight:700; }
+.icon-btn{ color:var(--ink); background:transparent; border-radius:50%; width:34px; height:34px; }
+.avatar{ border:0; background:var(--card); width:40px; height:40px; }
+.subpage-head button{ color:var(--ink); background:var(--card); border:none; }
+.subpage-head h2{ font-size:16px; }
+.section-label{ margin:20px 2px 9px; color:#526A79; font-size:11px; text-transform:uppercase; letter-spacing:.8px; }
+.upnext-card,.info-card,.trade-card,.chat-row,.doc-row,.duty-item,.checkin-card,.checkin-stat{
+  background:var(--card); border:none; box-shadow:none;
+}
+.upnext-card{ position:relative; padding:17px 18px 18px; border-radius:var(--radius-lg); overflow:hidden; }
+.upnext-card::before{ display:none; }
+.upnext-label{ color:var(--navy); text-transform:uppercase; letter-spacing:.65px; font-size:11px; }
+.upnext-duty{ color:#082F4A; font-size:24px; }
+.upnext-status.published{ background:#DDF3F6; color:#007D96; }
+.quick-actions{ gap:8px; }
+.qa-circle{ width:53px; height:53px; background:var(--card); border:none; color:var(--navy); box-shadow:none; }
+.qa-btn:nth-child(1) .qa-circle{ color:#087B9B; }
+.qa-btn:nth-child(2) .qa-circle{ color:#D71920; }
+.qa-btn:nth-child(3) .qa-circle{ color:#35667E; }
+.qa-btn:nth-child(4) .qa-circle{ color:#008A9E; }
+.qa-label{ color:#314A5A; font-size:10.5px; }
+.qa-badge,.count-pill{ background:var(--red); }
+.info-card{ border-radius:var(--radius-md); padding:13px 14px; }
+.info-card .ic-icon{ border-radius:6px; }
+.info-card .ic-title{ color:#17384D; }
+.roster-stats{ gap:6px; }
+.stat-chip{ background:var(--card); border:none; border-radius:var(--radius-md); box-shadow:none; }
+.stat-num{ color:var(--navy); }
+.sched-toolbar{ margin-bottom:11px; }
+.view-toggle{ background:var(--card); border-radius:12px; padding:3px; }
+.vt-btn{ border-radius:5px; }
+.vt-btn.active,.btn-primary,.btn-solid.is-ready,.btn-checkin,.btn-offer,.chat-send-btn{ background:var(--navy); }
+.today-btn{ background:#DCEEF3; color:#006E89; border-radius:6px; }
+.sched-sticky-head{ background:var(--bg); }
+.cal-weekdays{ padding:7px 0; color:#556C7A; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.cal-week-row{ gap:2px; margin-bottom:2px; }
+.cal-cell{ border-radius:5px; gap:4px; }
+.cal-cell:hover{ background:#E8F1F5; }
+.cal-cell.selected{ background:var(--navy); box-shadow:none; }
+.cal-cell.today::after{ background:var(--red); width:5px; height:5px; }
+.day-detail.inline{ background:var(--bg); }
+.duty-item{ border-radius:7px; box-shadow:none; }
+.bottom-nav{ padding-top:6px; background:#fff; border-top:1px solid var(--line); box-shadow:none; }
+.nav-btn{ position:relative; color:#758692; }
+.nav-btn.active{ color:var(--navy); }
+.nav-btn.active::before{ display:none; }
+.nav-btn.active i{ color:var(--orange); }
+.chat-row{ border-radius:8px; }
+.chat-avatar{ background:linear-gradient(135deg,#075377,#008DAA); }
+.chat-compose{ background:#fff; }
+.message-row.incoming .message-bubble{ background:#E4E9ED; color:#15242E; }
+.message-row.outgoing .message-bubble{ background:#075377; }
+.schedule-menu{ border-radius:8px; }
+.profile-hero,.profile-section{ border-radius:9px; }
+.settings-sheet{ border-radius:14px 14px 0 0; }
+
+:root[data-theme="dark"]{
+  --bg:#111C24; --bg-outer:#08131A; --surface:#162732; --card:#1B2C37;
+  --card-alt:#203540; --ink:#EDF5F8; --ink-soft:#C0D0D8; --ink-muted:#8CA1AC;
+  --navy:#087A9A; --line:#304550;
+}
+:root[data-theme="dark"] .upnext-card,
+:root[data-theme="dark"] .info-card,
+:root[data-theme="dark"] .trade-card,
+:root[data-theme="dark"] .chat-row,
+:root[data-theme="dark"] .doc-row,
+:root[data-theme="dark"] .duty-item,
+:root[data-theme="dark"] .stat-chip,
+:root[data-theme="dark"] .qa-circle{ background:var(--card); border-color:var(--line); }
+:root[data-theme="dark"] .upnext-duty,
+:root[data-theme="dark"] .info-card .ic-title,
+:root[data-theme="dark"] .qa-label{ color:var(--ink); }
+:root[data-theme="dark"] .bottom-nav,
+:root[data-theme="dark"] .chat-compose{ background:var(--surface); border-color:var(--line); }
+:root[data-theme="dark"] .sched-sticky-head{ background:var(--bg); }
 </style>
 </head>
 <body>
@@ -1111,7 +1220,8 @@ const DUTY_TYPES = {
   report:   { icon: "fa-right-to-bracket", bg: "#F1E6D4", fg: "#B98A52", label: "Report" },
   reserve:  { icon: "fa-clock",            bg: "#DBF0EC", fg: "#34A79C", label: "Reserve" },
   training: { icon: "fa-graduation-cap",   bg: "#E3ECFB", fg: "#2F6FED", label: "Training" },
-  layover:  { icon: "fa-bed",              bg: "#F3E3EC", fg: "#B4507C", label: "Layover" },
+  medical:  { icon: "fa-stethoscope",      bg: "#FCE7E9", fg: "#C23B4A", label: "Class 1 Medical" },
+  layover:  { icon: "fa-hotel",              bg: "#F3E3EC", fg: "#B4507C", label: "Layover" },
   off:      { icon: "fa-bed",              bg: "#EEE9F7", fg: "#7E6BA8", label: "Rest" }
 };
 
@@ -1136,57 +1246,6 @@ const AIRPORTS = {
   }
 };
 
-/* ---- Crew name pools for the "Flight" duty drill-down -------------------
-   Deterministic per flight number so the same flight always shows the same
-   crew. First Officer slot always includes Rishabh Tripathi, per spec. */
-const CREW_MALE_NAMES   = ["Arjun","Vikram","Rohan","Aditya","Karan","Siddharth","Aakash","Nikhil","Varun","Rahul","Aman","Yash","Kabir","Ishaan"];
-const CREW_FEMALE_NAMES = ["Priya","Ananya","Kavya","Diya","Isha","Meera","Sneha","Riya","Tanvi","Aisha","Neha","Pooja","Sanya","Anjali","Divya","Shreya","Nisha","Kritika"];
-const CREW_LAST_NAMES   = ["Sharma","Verma","Reddy","Nair","Menon","Iyer","Gupta","Kapoor","Malhotra","Chauhan","Rao","Pillai","Bhatt","Joshi","Desai","Kulkarni","Singh","Chatterjee","Mukherjee","Bose"];
-
-function hashStr(str){
-  let h = 0;
-  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
-  return Math.abs(h) || 1;
-}
-function seededRand(seed){
-  let s = seed % 2147483647;
-  if (s <= 0) s += 2147483646;
-  return function(){ s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
-}
-function generateCrew(flightNo){
-  const rand = seededRand(hashStr(flightNo || "DEFAULT"));
-  const used = new Set(["Rishabh Tripathi"]);
-  function uniqueName(pool){
-    let name, tries = 0;
-    do {
-      name = `${pool[Math.floor(rand() * pool.length)]} ${CREW_LAST_NAMES[Math.floor(rand() * CREW_LAST_NAMES.length)]}`;
-      tries++;
-    } while (used.has(name) && tries < 25);
-    used.add(name);
-    return name;
-  }
-  // The other three pilots are normally male. On roughly 8% of flights,
-  // exactly one of those three is a woman.
-  const femalePilotIndex = rand() < 0.08 ? Math.floor(rand() * 3) : -1;
-  const pilotPool = index => index === femalePilotIndex ? CREW_FEMALE_NAMES : CREW_MALE_NAMES;
-  const cockpit = [
-    { role:"Captain",        name: uniqueName(pilotPool(0)) },
-    { role:"Captain",        name: uniqueName(pilotPool(1)) },
-    { role:"First Officer",  name: "Rishabh Tripathi" },
-    { role:"First Officer",  name: uniqueName(pilotPool(2)) }
-  ];
-
-  // Strong female majority: 12 women and 3 men across the 15-person cabin crew.
-  const cabin = [{ role:"Lead Cabin Crew", name: uniqueName(CREW_FEMALE_NAMES) }];
-  const genders = [..."FFFFFFFFFFF".split(""), ..."MMM".split("")]; // remaining 14: 11F + 3M
-  for (let i = genders.length - 1; i > 0; i--){
-    const j = Math.floor(rand() * (i + 1));
-    [genders[i], genders[j]] = [genders[j], genders[i]];
-  }
-  genders.forEach(g => cabin.push({ role:"Cabin Crew", name: uniqueName(g === "F" ? CREW_FEMALE_NAMES : CREW_MALE_NAMES) }));
-
-  return { cockpit, cabin };
-}
 function initials(name){
   return name.split(" ").filter(Boolean).slice(0,2).map(p => p[0]).join("").toUpperCase();
 }
@@ -1194,9 +1253,10 @@ function initials(name){
 /* ---- ROSTER DATA ---------------------------------------------------------
    Add a roster by copying one date line below. Each date uses YYYY-MM-DD
    and may contain one or more duty items. Supported types are flight,
-   report, reserve, training, layover, and off. */
+   report, reserve, training, medical, layover, and off. */
 const ROSTER = {
   // Example new entry: "2026-09-01": [{type:"flight", flightNo:"AI123", dep:"DEL", arr:"BOM", depTime:"08:00", arrTime:"10:10"}],
+  // Add crew manually inside a flight: crew:{captains:["Name"],firstOfficers:["Name"],cabin:["Lead Name","Crew Name"]}
   // Reserve syntax: {type:"reserve", reserveLocation:"home", start:"08:00", end:"16:00"}
   //                  {type:"reserve", reserveLocation:"airport", start:"08:00", end:"16:00"}
   "2026-08-22": [{type:"off", note:"Rest"}],
@@ -1218,6 +1278,45 @@ const ROSTER = {
     {type:"flight", flightNo:"AIC538", dep:"MAA", arr:"DEL", depTime:"20:10", arrTime:"23:00", airtime:"02h 50m", note:"Terminal 2 → Terminal 3"}
   ],
   "2026-08-31": [{type:"reserve", reserveLocation:"airport", start:"15:25", end:"20:33", note:"Reserve duty"}],
+
+  //september roster now
+
+  "2026-09-01": [{type:"report", location:"AITA", start:"12:00", end:"19:00"}],
+  "2026-09-02": [{type:"training", note:"FMS Assessment", location:"T3", start:"13:00", end:"18:00"}],
+  "2026-09-03": [{type:"training", note:"Graduation Ceremony", location:"AITA", start:"16:00", end:"22:00"}],
+  "2026-09-04": [{type:"off", note:"Rest"}],
+  "2026-09-05": [{type:"layover", location:"Warehouse Visit", start:"12:00", end:"16:00", note:"Uniform inspection and Employee ID submission"}],
+  "2026-09-06": [{type:"off", note:"Rest"}],
+  "2026-09-07": [{type:"off", note:"Rest"}],
+  "2026-09-08": [{type:"off", note:"Rest"}],
+  "2026-09-09": [{type:"off", note:"Rest"}],
+  "2026-09-10": [{type:"off", note:"Rest"}],
+  "2026-09-11": [{type:"off", note:"Rest"}],
+  "2026-09-12": [{type:"off", note:"Rest"}],
+  "2026-09-13": [{type:"flight", flightNo:"AIC113", dep:"DEL", arr:"BHX", depTime:"11:20", arrTime:"18:15", airtime:"11h 25m", note:"Terminal 3", crew:{captains:["Ameya Attri","Kunwar Pratap Singh"],firstOfficers:["Rishabh Tripathi","Sahil Pasricha"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Ananya Iyer","Rahul Verma", "Kavita Kullupati, Madhuri Sharma, Anikt Vats, Kalyani Mukherji, Meenakshi Sati, Sheena Khan, Mohana Chaturvedi, Omna Om Vashishth, Khushi Desai, Harjeet Bal"]}}],
+  "2026-09-14": [{type:"flight", flightNo:"AIC114", dep:"BHX", arr:"DEL", depTime:"21:30", arrTime:"12:10+1", airtime:"10h 10m", note:"Terminal 2 → Terminal 3", crew:{captains:["Ameya Attri","Kunwar Pratap Singh"],firstOfficers:["Rishabh Tripathi","Sahil Pasricha"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Ananya Iyer","Rahul Verma", "Kavita Kullupati, Madhuri Sharma, Anikt Vats, Kalyani Mukherji, Meenakshi Sati, Sheena Khan, Mohana Chaturvedi, Omna Om Vashishth, Khushi Desai, Harjeet Bal"]}}],
+  "2026-09-15": [
+    {type:"flight", continuation:true, continuesFrom:"2026-09-14", flightNo:"AIC114", dep:"BHX", arr:"DEL", arrTime:"12:10", note:"Arrival continuation · Terminal 3"},
+    {type:"off", start:"12:10", note:"Post-duty Rest"}
+  ],
+  "2026-09-16": [{type:"off", note:"Rest"}],
+  "2026-09-17": [{type:"flight", flightNo:"AIC115", dep:"DEL", arr:"BOM", depTime:"17:00", arrTime:"19:25", airtime:"02h 25m", note:"Terminal 3"},
+    {type:"flight", flightNo:"AIC816", dep:"BOM", arr:"DEL", depTime:"21:00", arrTime:"23:15", airtime:"02h 15m", note:"Terminal 3"}
+  ],
+  "2026-09-18": [{type:"medical", location:"AIIMS Delhi", start:"09:00 AM", end:"04:00 PM", note:"Class 1 medical checkup"}],
+  "2026-09-19": [{type:"flight", flightNo:"AI173", aircraft:"B777-200LR", dep:"DEL", arr:"SFO", depTime:"03:55", arrTime:"07:00", airtime:"16h 35m", note:"International · Terminal 3", crew:{captains:[],firstOfficers:[],cabin:[]}}],
+  "2026-09-20": [{type:"layover", location:"San Francisco, USA", start:"09:00", end:"08:00+2", hotel:{name:"Hyatt Regency San Francisco Airport", address:"1333 Bayshore Highway, Burlingame, CA", phone:"+1 650 347 1234", transport:"Crew coach from SFO International Terminal", checkIn:"09:00", checkOut:"08:00 on 22 Sep"}, note:"International layover · Local time"}],
+  "2026-09-21": [{type:"off", note:"Rest · San Francisco layover"}],
+  "2026-09-22": [{type:"flight", flightNo:"AI174", aircraft:"B777-200LR", dep:"SFO", arr:"DEL", depTime:"10:30", arrTime:"14:45+1", airtime:"15h 45m", note:"International · Arrival Terminal 3", crew:{captains:[],firstOfficers:[],cabin:[]}}],
+  "2026-09-23": [{type:"flight", continuation:true, continuesFrom:"2026-09-22", flightNo:"AI174", aircraft:"B777-200LR", dep:"SFO", arr:"DEL", arrTime:"14:45", note:"Overnight arrival continuation · Terminal 3"}],
+  "2026-09-24": [{type:"flight", flightNo:"AIC113", aircraft:"B777-300ER", dep:"DEL", arr:"BHX", depTime:"11:20", arrTime:"18:15", airtime:"11h 25m", note:"International · Terminal 3", crew:{captains:[],firstOfficers:[],cabin:[]}}],
+  "2026-09-25": [{type:"off", note:"Rest · Birmingham layover"}],
+  "2026-09-26": [{type:"layover", location:"Birmingham, UK", start:"00:00", end:"18:30+1", hotel:{name:"Hilton Birmingham Metropole", address:"National Exhibition Centre, Birmingham B40 1PP", phone:"+44 121 780 4242", transport:"Crew coach from Birmingham Airport", checkIn:"Available", checkOut:"18:30 on 27 Sep"}, note:"International layover · Local time"}],
+  "2026-09-27": [{type:"flight", flightNo:"AIC114", aircraft:"B777-300ER", dep:"BHX", arr:"DEL", depTime:"21:30", arrTime:"12:10+1", airtime:"10h 10m", note:"International · Arrival Terminal 3", crew:{captains:[],firstOfficers:[],cabin:[]}}],
+  "2026-09-28": [{type:"flight", continuation:true, continuesFrom:"2026-09-27", flightNo:"AIC114", aircraft:"B777-300ER", dep:"BHX", arr:"DEL", arrTime:"12:10", note:"Overnight arrival continuation · Terminal 3"}],
+  "2026-09-29": [{type:"off", note:"Rest"}],
+  "2026-09-30": [{type:"flight", flightNo:"AI173", aircraft:"B777-200LR", dep:"DEL", arr:"SFO", depTime:"03:55", arrTime:"07:00", airtime:"16h 35m", note:"International · Terminal 3", crew:{captains:[],firstOfficers:[],cabin:[]}}],
+
 
 };
 // Existing screen code reads this alias; keep it when adding roster entries.
@@ -1244,7 +1343,8 @@ const CHATS = [
   { name:"Capt. C. V. Madhu", initials:"CV", photo:"https://pbs.twimg.com/media/ErtjKC5UcAA88zw?format=jpg&name=900x900", preview:"Hey Rishabh, this is the captain CV Madhu. I will be undertaking your flight operations skills on 30th. Please be prepare and all the best. You can ping me here in case of any assistance.", time:"9:41 PM" }
 ];
 const CHAT_MESSAGES = CHATS.map(chat => [
-  { direction:"incoming", text:chat.preview, time:chat.time }
+  { direction:"incoming", text:chat.preview, time:chat.time },
+  { direction:"outgoing", text:"Alright Captain, I will let you know that. Thanks", time:"9:45 PM" }
 ]);
 let activeChatIndex = 0;
 
@@ -1575,10 +1675,16 @@ function buildCalendarGrid(monthDate, opts){
       const meta = dutyMeta(primary.type);
       dutyMeaning = meta.label;
       iconHtml = `<i class="fa-solid ${meta.icon} cal-ico" style="--duty-icon-color:${meta.fg}" aria-hidden="true"></i>`;
-      if (primary.type === "flight") codeHtml = `<span class="cal-code">${primary.arr || ""}</span>`;
+      if (primary.type === "flight"){
+        const includesRest = events.some(event => event.type === "off");
+        codeHtml = `<span class="cal-code">${primary.arr || ""}${includesRest ? " + Rest" : ""}</span>`;
+        if (includesRest) dutyMeaning = `${meta.label} to ${primary.arr || "destination"} and Rest`;
+      }
       if (primary.type === "training") codeHtml = `<span class="cal-code">${primary.location || ""}</span>`;
       if (primary.type === "report") codeHtml = `<span class="cal-code">${primary.start || ""}</span>`;
+      if (primary.type === "medical") codeHtml = `<span class="cal-code">${primary.start || "Medical"}</span>`;
       if (primary.type === "reserve") codeHtml = `<span class="cal-code">${reserveLocationLabel(primary)}</span>`;
+      if (primary.type === "layover") codeHtml = `<span class="cal-code">${(primary.location || "Layover").split(",")[0]}</span>`;
     }
 
     cells.push(`
@@ -1729,15 +1835,27 @@ function onScheduleScroll(){
 function updateScheduleHeaderFromScroll(){
   const scrollParent = document.querySelector("#view-schedule .app-main");
   const stickyHead = document.querySelector("#view-schedule .sched-sticky-head");
-  if (!scrollParent) return;
+  const container = document.getElementById("sched-cal-scroll");
+  if (!scrollParent || !container) return;
   const thresholdY = scrollParent.getBoundingClientRect().top + (stickyHead ? stickyHead.getBoundingClientRect().height : 0) + 6;
-  const blocks = document.querySelectorAll(".cal-month-block");
+  const blocks = container.querySelectorAll(".cal-month-block");
   let current = null;
+  let nearest = null;
+  let nearestDistance = Infinity;
   blocks.forEach(b => {
     const r = b.getBoundingClientRect();
     if (r.top <= thresholdY && r.bottom > thresholdY) current = b;
+    const distance = thresholdY < r.top ? r.top - thresholdY
+      : thresholdY > r.bottom ? thresholdY - r.bottom
+      : 0;
+    if (distance < nearestDistance){
+      nearest = b;
+      nearestDistance = distance;
+    }
   });
-  if (!current && blocks.length) current = blocks[0];
+  // The threshold can briefly sit in the margin between month blocks while
+  // scrolling. Use the adjacent block, never the first preloaded month.
+  if (!current) current = nearest;
   if (!current) return;
 
   const y = parseInt(current.dataset.year, 10), m = parseInt(current.dataset.month, 10);
@@ -1850,7 +1968,17 @@ function buildDutyRowsHTML(items, dateStr, keyPrefix){
     const key = `${keyPrefix}${dateStr}__${idx}`;
     let title, gridHtml = "", noteHtml = "", clickable = false, expandHtml = "";
 
-    if (item.type === "flight"){
+    if (item.type === "flight" && item.continuation){
+      title = `Arrival · ${item.flightNo}`;
+      gridHtml = `
+        <div class="di-grid">
+          <div class="di-col"><div class="di-label">From</div><div class="di-value">${item.dep}</div></div>
+          <div class="di-col arrow"><i class="fa-solid fa-arrow-right"></i></div>
+          <div class="di-col"><div class="di-label">Arrives</div><div class="di-value">${item.arr} ${item.arrTime}</div></div>
+        </div>`;
+      noteHtml = `<div class="di-note">Continued from ${prettyDate(item.continuesFrom, {day:"numeric", month:"short"})}${item.note ? ` · ${item.note}` : ""}</div>`;
+      clickable = false;
+    } else if (item.type === "flight"){
       title = `${item.flightNo} · ${item.dep} → ${item.arr}`;
       gridHtml = `
         <div class="di-grid">
@@ -1859,7 +1987,7 @@ function buildDutyRowsHTML(items, dateStr, keyPrefix){
           <div class="di-col"><div class="di-label">Arrives</div><div class="di-value">${item.arr} ${item.arrTime}</div></div>
         </div>`;
       const airtime = item.airtime || fmtHrsMins(flightDurationMinutes(item));
-      noteHtml = `<div class="di-note">Airtime · ${airtime}${item.note ? ` · ${item.note}` : ""}</div>`;
+      noteHtml = `<div class="di-note">Airtime · ${airtime}${item.aircraft ? ` · ${item.aircraft}` : ""}${item.note ? ` · ${item.note}` : ""}</div>`;
       clickable = true;
       expandHtml = buildCrewListHTML(item);
     } else if (item.type === "report"){
@@ -1883,11 +2011,23 @@ function buildDutyRowsHTML(items, dateStr, keyPrefix){
       clickable = false; // reserve intentionally has no drill-down detail
     } else if (item.type === "layover"){
       title = `Layover · ${item.location}`;
-      noteHtml = `<div class="di-note">${item.note || "Rest period"}</div>`;
+      if (item.hotel){
+        gridHtml = `
+          <div class="di-grid">
+            <div class="di-col"><div class="di-label">Hotel</div><div class="di-value">${item.hotel.name}</div></div>
+            <div class="di-col"><div class="di-label">Check-in</div><div class="di-value">${item.hotel.checkIn || ""}</div></div>
+            <div class="di-col"><div class="di-label">Check-out</div><div class="di-value">${item.hotel.checkOut || ""}</div></div>
+          </div>`;
+        noteHtml = `<div class="di-note">${item.hotel.address}${item.hotel.phone ? ` · ${item.hotel.phone}` : ""}${item.hotel.transport ? ` · ${item.hotel.transport}` : ""}${item.note ? ` · ${item.note}` : ""}</div>`;
+      } else {
+        noteHtml = `<div class="di-note">${item.note || "Rest period"}</div>`;
+      }
       clickable = false;
     } else if (item.type === "off"){
       title = item.note || "Day Off";
-      noteHtml = item.note ? `<div class="di-note">Day off</div>` : "";
+      noteHtml = item.start
+        ? `<div class="di-note">Rest begins after arrival at ${item.start}</div>`
+        : (item.note ? `<div class="di-note">Day off</div>` : "");
       clickable = false;
     } else {
       title = `${meta.label} · ${item.location || CURRENT_USER.base}`;
@@ -1947,7 +2087,14 @@ function computeMonthStats(monthDate){
     if (!items || !items.length) continue;
     if (items.length === 1 && items[0].type === "off"){ daysOff++; continue; }
     dutyDays++;
-    items.forEach(it => { if (it.type === "flight"){ flights++; blockMinutes += flightDurationMinutes(it); } });
+    items.forEach(it => {
+      // A continuation marks a cross-midnight arrival on the following day;
+      // the sector and block time are already counted on its departure date.
+      if (it.type === "flight" && !it.continuation){
+        flights++;
+        blockMinutes += flightDurationMinutes(it);
+      }
+    });
   }
   return { flights, dutyDays, daysOff, blockMinutes };
 }
@@ -2030,7 +2177,15 @@ function toggleDutyDetail(key){
 }
 
 function buildCrewListHTML(item){
-  const { cockpit, cabin } = generateCrew(item.flightNo);
+  // Crew is intentionally manual and flight-specific. Nothing is generated.
+  const configured = item.crew || {};
+  const cockpit = [
+    ...(configured.captains || []).map(name => ({role:"Captain", name})),
+    ...(configured.firstOfficers || []).map(name => ({role:"First Officer", name}))
+  ];
+  const cabin = (configured.cabin || []).map((name, index) => ({
+    role:index === 0 ? "Lead Cabin Crew" : "Cabin Crew", name
+  }));
   const rowsHtml = (arr) => arr.map(c => `
     <div class="crew-row">
       <div class="crew-avatar">${initials(c.name)}</div>
@@ -2038,9 +2193,9 @@ function buildCrewListHTML(item){
     </div>`).join("");
   return `
     <div class="crew-section-label">Crew Portal · Cockpit Crew</div>
-    ${rowsHtml(cockpit)}
+    ${cockpit.length ? rowsHtml(cockpit) : `<div class="empty-state"><p>No cockpit crew assigned.</p></div>`}
     <div class="crew-section-label second">Cabin Crew</div>
-    ${rowsHtml(cabin)}`;
+    ${cabin.length ? rowsHtml(cabin) : `<div class="empty-state"><p>No cabin crew assigned.</p></div>`}`;
 }
 
 function buildAirportInfoHTML(locationCode){
