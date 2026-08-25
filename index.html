@@ -805,22 +805,9 @@ body{ background:var(--bg-outer); }
 
 /* ---- CAE Red accent line at very top of the app ---- */
 #app-root::before{
-  content:""; display:block; height:3px; flex-shrink:0;
+  content:""; display:block; height:1px; flex-shrink:0;
   background:linear-gradient(90deg,#DC2626 0%,#EF4444 50%,#DC2626 100%);
 }
-
-/* ---- 2. iOS Status Bar ---- */
-.ios-status-bar{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:8px 22px 5px; background:var(--surface); flex-shrink:0;
-  font-family:var(--font-body); font-size:14px; font-weight:600;
-  color:var(--ink); letter-spacing:.2px; z-index:50;
-}
-.ios-status-bar .sb-time{ font-weight:700; font-size:15px; }
-.ios-status-bar .sb-icons{
-  display:flex; align-items:center; gap:5px; font-size:13px;
-}
-:root[data-theme="dark"] .ios-status-bar{ background:var(--surface); color:var(--ink); }
 
 /* ---- 3. CAE Splash Screen ---- */
 .cae-splash{
@@ -2801,36 +2788,13 @@ function renderDocuments(){
   var appRoot = document.getElementById('app-root');
 
   /* ---- helpers ---- */
-  function fmtStatusTime(){
-    return new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
-  }
   function fmtSyncTime(){
     var d = new Date();
     return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
   }
 
   /* ==================================================================
-     1. iOS STATUS BAR — injected as first child of #app-root
-     ================================================================== */
-  var statusBar = document.createElement('div');
-  statusBar.className = 'ios-status-bar';
-  statusBar.innerHTML =
-    '<span class="sb-time">' + fmtStatusTime() + '</span>' +
-    '<span class="sb-icons">' +
-      '<i class="fa-solid fa-signal" style="font-size:11px"></i> ' +
-      '<i class="fa-solid fa-wifi" style="font-size:12px"></i> ' +
-      '<span style="display:inline-flex;align-items:center;gap:1px">' +
-        '<i class="fa-solid fa-battery-full" style="font-size:15px"></i>' +
-      '</span>' +
-    '</span>';
-  appRoot.insertBefore(statusBar, appRoot.firstChild);
-  setInterval(function(){
-    var timeEl = statusBar.querySelector('.sb-time');
-    if(timeEl) timeEl.textContent = fmtStatusTime();
-  }, 30000);
-
-  /* ==================================================================
-     2. SPLASH SCREEN — full-screen overlay, auto-dismiss after 1.8s
+     1. SPLASH SCREEN — full-screen overlay, auto-dismiss after 1.8s
      ================================================================== */
   var splash = document.createElement('div');
   splash.className = 'cae-splash';
