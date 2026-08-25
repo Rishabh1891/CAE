@@ -780,6 +780,323 @@ body{ background:var(--bg-outer); }
 :root[data-theme="dark"] .bottom-nav,
 :root[data-theme="dark"] .chat-compose{ background:var(--surface); border-color:var(--line); }
 :root[data-theme="dark"] .sched-sticky-head{ background:var(--bg); }
+
+/* =====================================================================
+   REALISTIC CAE ENHANCEMENTS — Additive CSS Layer
+   Nothing above this line is modified. Rules below override via cascade.
+   ===================================================================== */
+
+/* ---- 1. CAE Color System (Dodger Blue primary accent) ---- */
+:root{
+  --navy:#2969F2;
+  --cae-blue:#2969F2;
+  --cae-dark:#0F172A;
+  --cae-border:#E2E8F0;
+}
+:root[data-theme="dark"]{
+  --navy:#3B82F6;
+  --cae-blue:#3B82F6;
+  --cae-border:#2D3B48;
+}
+/* Outgoing chat bubble uses a deeper shade so white text stays readable */
+#app-root .message-row.outgoing .message-bubble{ background:#1D4ED8; }
+#app-root .chat-avatar{ background:linear-gradient(135deg,#1D4ED8,var(--cae-blue)); }
+:root[data-theme="dark"] #app-root .message-row.outgoing .message-bubble{ background:#1E40AF; }
+
+/* ---- CAE Red accent line at very top of the app ---- */
+#app-root::before{
+  content:""; display:block; height:3px; flex-shrink:0;
+  background:linear-gradient(90deg,#DC2626 0%,#EF4444 50%,#DC2626 100%);
+}
+
+/* ---- 2. iOS Status Bar ---- */
+.ios-status-bar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 22px 5px; background:var(--surface); flex-shrink:0;
+  font-family:var(--font-body); font-size:14px; font-weight:600;
+  color:var(--ink); letter-spacing:.2px; z-index:50;
+}
+.ios-status-bar .sb-time{ font-weight:700; font-size:15px; }
+.ios-status-bar .sb-icons{
+  display:flex; align-items:center; gap:5px; font-size:13px;
+}
+:root[data-theme="dark"] .ios-status-bar{ background:var(--surface); color:var(--ink); }
+
+/* ---- 3. CAE Splash Screen ---- */
+.cae-splash{
+  position:fixed; inset:0; z-index:9999;
+  background:linear-gradient(155deg,#0F172A 0%,#1E293B 55%,#0F172A 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+  transition:opacity .5s ease, transform .5s ease;
+}
+.cae-splash.hide{ opacity:0; transform:scale(1.03); pointer-events:none; }
+.cae-splash-logo{
+  width:74px; height:74px; border-radius:20px;
+  background:#2969F2; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 14px 44px rgba(41,105,242,.4);
+  animation:splash-glow 1.6s ease-in-out infinite;
+}
+.cae-splash-logo i{ color:#fff; font-size:32px; }
+.cae-splash-title{
+  font-family:var(--font-display); font-size:24px; font-weight:700;
+  color:#fff; letter-spacing:.6px; margin-top:4px;
+}
+.cae-splash-sub{
+  font-size:11px; color:#94A3B8; letter-spacing:1.8px; text-transform:uppercase;
+}
+.cae-splash-spinner{
+  width:26px; height:26px; border:3px solid rgba(255,255,255,.12);
+  border-top-color:#2969F2; border-radius:50%;
+  animation:splash-spin .75s linear infinite; margin-top:28px;
+}
+@keyframes splash-spin{ to{ transform:rotate(360deg); } }
+@keyframes splash-glow{
+  0%,100%{ box-shadow:0 14px 44px rgba(41,105,242,.35); }
+  50%{ box-shadow:0 14px 60px rgba(41,105,242,.6); }
+}
+
+/* ---- 4. Dashboard Enhancements ---- */
+/* Check-in countdown */
+.checkin-countdown{
+  display:flex; align-items:center; gap:8px;
+  border-radius:8px; padding:10px 12px; margin-top:14px;
+  font-size:12px; font-weight:600;
+}
+.checkin-countdown.open{
+  background:#ECFDF5; border:1px solid #A7F3D0; color:#059669;
+}
+.checkin-countdown.closed{
+  background:#FEF3C7; border:1px solid #FDE68A; color:#92400E;
+}
+:root[data-theme="dark"] .checkin-countdown.open{
+  background:#052E16; border-color:#166534; color:#4ADE80;
+}
+:root[data-theme="dark"] .checkin-countdown.closed{
+  background:#451A03; border-color:#78350F; color:#FBBF24;
+}
+.checkin-countdown .ci-dot{
+  width:8px; height:8px; border-radius:50%; flex-shrink:0;
+}
+.checkin-countdown.open .ci-dot{ background:#10B981; animation:ci-pulse 2s ease-in-out infinite; }
+.checkin-countdown.closed .ci-dot{ background:#F59E0B; }
+@keyframes ci-pulse{
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%{ opacity:.4; transform:scale(.7); }
+}
+
+/* FTL gauge */
+.flt-gauge{ margin-top:14px; }
+.flt-gauge-row{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:10px; color:var(--ink-muted); text-transform:uppercase;
+  letter-spacing:.3px; margin-bottom:5px; font-weight:600;
+}
+.flt-gauge-bar{
+  height:6px; background:var(--card); border-radius:3px; overflow:hidden;
+  border:1px solid var(--cae-border);
+}
+.flt-gauge-fill{
+  height:100%; border-radius:3px; transition:width 1.2s cubic-bezier(.4,0,.2,1);
+}
+.flt-gauge-fill.safe{ background:linear-gradient(90deg,#10B981,#34D399); }
+.flt-gauge-fill.warn{ background:linear-gradient(90deg,#F59E0B,#FBBF24); }
+.flt-gauge-fill.danger{ background:linear-gradient(90deg,#DC2626,#EF4444); }
+
+/* Duty state badge */
+.duty-state-badge{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:9.5px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.5px; padding:3px 9px; border-radius:20px;
+}
+.duty-state-badge.off-duty{ background:#F1F5F9; color:#64748B; }
+.duty-state-badge.on-duty{ background:#DCFCE7; color:#16A34A; }
+:root[data-theme="dark"] .duty-state-badge.off-duty{ background:#1E293B; color:#94A3B8; }
+:root[data-theme="dark"] .duty-state-badge.on-duty{ background:#052E16; color:#4ADE80; }
+
+/* Info strip between header and content */
+.cae-info-strip{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 18px 10px; flex-shrink:0;
+}
+
+/* ---- 5. Frosted Glass Bottom Nav ---- */
+#app-root .bottom-nav{
+  background:rgba(255,255,255,.78);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  backdrop-filter:saturate(180%) blur(20px);
+  border-top:.5px solid rgba(0,0,0,.1);
+  box-shadow:0 -1px 12px rgba(0,0,0,.04);
+}
+:root[data-theme="dark"] #app-root .bottom-nav{
+  background:rgba(22,39,50,.82);
+  border-top-color:rgba(255,255,255,.06);
+  box-shadow:0 -1px 12px rgba(0,0,0,.2);
+}
+#app-root .nav-btn{ position:relative; transition:transform .12s ease; }
+#app-root .nav-btn.active::after{
+  content:""; position:absolute; top:-8px; left:50%; transform:translateX(-50%);
+  width:22px; height:3px; border-radius:2px; background:var(--cae-blue);
+}
+#app-root .nav-btn:active{ transform:scale(.85); }
+
+/* ---- 6. Micro-Interactions ---- */
+/* Press feedback on interactive cards */
+#app-root .info-card,
+#app-root .swap-card,
+#app-root .trade-card,
+#app-root .chat-row,
+#app-root .doc-row,
+#app-root .duty-item.clickable,
+#app-root .qa-btn,
+#app-root .profile-section-head{
+  transition:transform .1s ease, box-shadow .1s ease;
+}
+#app-root .info-card:active,
+#app-root .swap-card:active,
+#app-root .trade-card:active,
+#app-root .chat-row:active,
+#app-root .doc-row:active,
+#app-root .duty-item.clickable:active,
+#app-root .qa-btn:active,
+#app-root .profile-section-head:active{
+  transform:scale(.97);
+}
+/* Button press */
+#app-root .btn-primary:active,
+#app-root .btn-checkin:active,
+#app-root .btn-offer:active,
+#app-root .btn-sm:active,
+#app-root .fab:active{
+  transform:scale(.94) !important; filter:brightness(.95);
+}
+
+/* Badge pulse */
+#app-root .qa-badge,
+#app-root .count-pill,
+#app-root .icon-btn .dot{
+  animation:cae-badge-pulse 2.5s ease-in-out infinite;
+}
+@keyframes cae-badge-pulse{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.15); }
+}
+
+/* Calendar cell tap */
+#app-root .cal-cell{
+  transition:background .12s ease, transform .08s ease; overflow:hidden;
+}
+#app-root .cal-cell:not(.empty):not(.selected):active{
+  transform:scale(.88); background:#EEF2FF;
+}
+:root[data-theme="dark"] #app-root .cal-cell:not(.empty):not(.selected):active{
+  background:#1E3A5F;
+}
+
+/* Page slide-in */
+#app-root .view{
+  animation:cae-view-in .2s cubic-bezier(.25,.46,.45,.94);
+}
+@keyframes cae-view-in{
+  from{ opacity:0; transform:translateX(14px); }
+  to{ opacity:1; transform:translateX(0); }
+}
+
+/* Smooth spring easing for expand panels */
+#app-root .duty-expand{
+  transition:max-height .35s cubic-bezier(.4,0,.2,1);
+}
+#app-root .profile-detail{
+  transition:max-height .35s cubic-bezier(.4,0,.2,1), padding .35s ease;
+}
+
+/* ---- 7. Connection Status Pill ---- */
+.sync-pill{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:9px; font-weight:600; color:#059669;
+  background:#F0FDF4; border:1px solid #BBF7D0;
+  padding:3px 8px 3px 6px; border-radius:20px;
+  letter-spacing:.2px;
+}
+.sync-pill .sync-dot{
+  width:5px; height:5px; border-radius:50%; background:#10B981;
+  animation:ci-pulse 2s ease-in-out infinite;
+}
+:root[data-theme="dark"] .sync-pill{
+  background:#052E16; border-color:#166534; color:#4ADE80;
+}
+:root[data-theme="dark"] .sync-pill .sync-dot{ background:#4ADE80; }
+
+/* ---- 8. Card & Surface Polish ---- */
+#app-root .upnext-card,
+#app-root .info-card,
+#app-root .swap-card,
+#app-root .trade-card,
+#app-root .chat-row,
+#app-root .doc-row,
+#app-root .stat-chip,
+#app-root .profile-section,
+#app-root .checkin-card,
+#app-root .checkin-stat{
+  border:1px solid var(--cae-border);
+  box-shadow:0 1px 3px rgba(0,0,0,.04), 0 1px 2px rgba(0,0,0,.02);
+}
+#app-root .duty-item{
+  border:1px solid var(--cae-border);
+  border-left-width:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+:root[data-theme="dark"] #app-root .upnext-card,
+:root[data-theme="dark"] #app-root .info-card,
+:root[data-theme="dark"] #app-root .swap-card,
+:root[data-theme="dark"] #app-root .trade-card,
+:root[data-theme="dark"] #app-root .chat-row,
+:root[data-theme="dark"] #app-root .doc-row,
+:root[data-theme="dark"] #app-root .stat-chip,
+:root[data-theme="dark"] #app-root .profile-section,
+:root[data-theme="dark"] #app-root .duty-item{
+  border-color:var(--line); box-shadow:0 1px 5px rgba(0,0,0,.25);
+}
+
+/* ---- 9. Lock Screen ---- */
+.lock-overlay{
+  position:fixed; inset:0; z-index:500;
+  background:rgba(15,23,42,.92);
+  -webkit-backdrop-filter:blur(28px); backdrop-filter:blur(28px);
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:14px;
+  opacity:0; pointer-events:none; transition:opacity .3s ease;
+  cursor:pointer;
+}
+.lock-overlay.show{ opacity:1; pointer-events:auto; }
+.lock-icon{
+  width:68px; height:68px; border-radius:50%;
+  background:rgba(41,105,242,.12); border:2px solid rgba(41,105,242,.25);
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px; color:var(--cae-blue);
+  animation:lock-breathe 2.8s ease-in-out infinite;
+}
+@keyframes lock-breathe{
+  0%,100%{ box-shadow:0 0 0 0 rgba(41,105,242,.12); }
+  50%{ box-shadow:0 0 0 18px rgba(41,105,242,0); }
+}
+.lock-title{
+  color:#fff; font-family:var(--font-display);
+  font-weight:700; font-size:18px; margin-top:4px;
+}
+.lock-sub{ color:#94A3B8; font-size:13px; }
+.lock-hint{ color:#475569; font-size:11px; margin-top:30px; letter-spacing:.3px; }
+
+/* ---- 10. Profile Cover Gradient + Watermark ---- */
+#app-root .profile-cover{ position:relative; }
+#app-root .profile-cover::after{
+  content:""; position:absolute; bottom:0; left:0; right:0; height:55%;
+  background:linear-gradient(to top, rgba(0,0,0,.4), transparent);
+  pointer-events:none;
+}
+.cae-watermark{
+  text-align:center; padding:18px 0 6px;
+  font-size:10px; color:var(--ink-muted); letter-spacing:.6px;
+}
 </style>
 </head>
 <body>
@@ -1325,7 +1642,7 @@ const SCHEDULE = ROSTER;
 /* ---- Mock duty swap requests -------------------------------------------
    direction: "incoming" (someone asked YOU) / "outgoing" (you requested) */
 let SWAPS = [
-  { id:1, direction:"incoming", status:"pending",  date:"2026-11-07", route:"DEL → BOM · AI401", counterparty:"Harriet Hughes", crewId:"CA2231", note:"Family event, can trade my Nov 10 DXB turn if that helps." },
+  { id:1, direction:"incoming", status:"pending",  date:"2026-11-07", route:"DEL → BOM · AI401", counterparty:"Ashu Puneet", crewId:"CA2231", note:"Family event, can trade my Nov 10 DXB turn if that helps." },
   { id:2, direction:"outgoing", status:"pending",  date:"2026-09-19", route:"DEL → DXB · AI945", counterparty:"Marcus Lee",    crewId:"CA1188", note:"" },
   { id:3, direction:"outgoing", status:"accepted", date:"2026-08-15", route:"DEL Training",       counterparty:"Priya Menon",   crewId:"CA1042", note:"" }
 ];
@@ -1607,7 +1924,7 @@ function renderDashboard(){
     .filter(([date, items]) => date >= fmt(TODAY) && items.some(item => item.type !== "off"))
     .length;
   const scheduleBadge = document.getElementById("badge-schedule");
-  scheduleBadge.textContent = upcomingDutyDays > 9 ? "9+" : upcomingDutyDays;
+  scheduleBadge.textContent = upcomingDutyDays > 2 ? "2+" : upcomingDutyDays;
   scheduleBadge.style.display = upcomingDutyDays ? "flex" : "none";
 
   // incoming swap preview on dashboard
@@ -2474,6 +2791,222 @@ function renderDocuments(){
     </div>
   `).join("");
 }
+
+/* =====================================================================
+   REALISTIC CAE ENHANCEMENTS — Additive JavaScript
+   Nothing above this line is modified. All hooks use function wrapping.
+   ===================================================================== */
+(function caeEnhancements(){
+  'use strict';
+  var appRoot = document.getElementById('app-root');
+
+  /* ---- helpers ---- */
+  function fmtStatusTime(){
+    return new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
+  }
+  function fmtSyncTime(){
+    var d = new Date();
+    return d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
+  }
+
+  /* ==================================================================
+     1. iOS STATUS BAR — injected as first child of #app-root
+     ================================================================== */
+  var statusBar = document.createElement('div');
+  statusBar.className = 'ios-status-bar';
+  statusBar.innerHTML =
+    '<span class="sb-time">' + fmtStatusTime() + '</span>' +
+    '<span class="sb-icons">' +
+      '<i class="fa-solid fa-signal" style="font-size:11px"></i> ' +
+      '<i class="fa-solid fa-wifi" style="font-size:12px"></i> ' +
+      '<span style="display:inline-flex;align-items:center;gap:1px">' +
+        '<i class="fa-solid fa-battery-full" style="font-size:15px"></i>' +
+      '</span>' +
+    '</span>';
+  appRoot.insertBefore(statusBar, appRoot.firstChild);
+  setInterval(function(){
+    var timeEl = statusBar.querySelector('.sb-time');
+    if(timeEl) timeEl.textContent = fmtStatusTime();
+  }, 30000);
+
+  /* ==================================================================
+     2. SPLASH SCREEN — full-screen overlay, auto-dismiss after 1.8s
+     ================================================================== */
+  var splash = document.createElement('div');
+  splash.className = 'cae-splash';
+  splash.innerHTML =
+    '<div class="cae-splash-logo"><i class="fa-solid fa-plane"></i></div>' +
+    '<div class="cae-splash-title">Crew Access</div>' +
+    '<div class="cae-splash-sub">Powered by CAE</div>' +
+    '<div class="cae-splash-spinner"></div>';
+  document.body.appendChild(splash);
+  setTimeout(function(){ splash.classList.add('hide'); }, 1800);
+  setTimeout(function(){ if(splash.parentNode) splash.parentNode.removeChild(splash); }, 2500);
+
+  /* ==================================================================
+     3. SYNC STATUS PILL + DUTY BADGE — removed by request
+     ================================================================== */
+
+  /* ==================================================================
+     4. DASHBOARD ENHANCEMENTS — Check-in Countdown + FTL Gauge
+        Hook into renderDashboard non-destructively via wrapping.
+     ================================================================== */
+  var _origRenderDashboard = window.renderDashboard;
+  window.renderDashboard = function(){
+    _origRenderDashboard.apply(this, arguments);
+    caeEnhanceDashboard();
+  };
+
+  function caeEnhanceDashboard(){
+    var card = document.getElementById('up-next-card');
+    if(!card) return;
+
+    /* Prevent duplicate injection before rebuilding the card enhancements */
+    var existing = document.querySelectorAll('#view-dashboard .checkin-countdown, #view-dashboard .flt-gauge');
+    for(var i = 0; i < existing.length; i++) existing[i].parentNode.removeChild(existing[i]);
+
+    var todayKey = fmt(TODAY);
+    var todayItems = SCHEDULE[todayKey] || [];
+    var activeDuty = null;
+    for(var j = 0; j < todayItems.length; j++){
+      if(todayItems[j].type !== 'off'){ activeDuty = todayItems[j]; break; }
+    }
+
+    /* Check-in status — rendered below the FTL gauge inside the roster card */
+    var ci = document.createElement('div');
+    if(activeDuty){
+      ci.className = 'checkin-countdown open';
+      ci.innerHTML = '<span class="ci-dot"></span> Check-in confirmed \u00B7 Duty active';
+    } else {
+      ci.className = 'checkin-countdown closed';
+      ci.innerHTML = '<span class="ci-dot"></span> No active check-in \u00B7 Rest period';
+    }
+    /* FTL Gauge */
+    var monthDate = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+    var stats = computeMonthStats(monthDate);
+    var blockHours = Math.round(stats.blockMinutes / 60);
+    var maxHours = 100;
+    var pct = Math.min(Math.round((blockHours / maxHours) * 100), 100);
+    var fillClass = pct > 85 ? 'danger' : pct > 60 ? 'warn' : 'safe';
+    var monthLabel = monthDate.toLocaleDateString('en-US',{month:'short'});
+
+    var gauge = document.createElement('div');
+    gauge.className = 'flt-gauge';
+    gauge.innerHTML =
+      '<div class="flt-gauge-row">' +
+        '<span>FTL \u00B7 Block Hours (' + monthLabel + ')</span>' +
+        '<span>' + blockHours + 'h / ' + maxHours + 'h</span>' +
+      '</div>' +
+      '<div class="flt-gauge-bar">' +
+        '<div class="flt-gauge-fill ' + fillClass + '" style="width:0%"></div>' +
+      '</div>';
+    card.appendChild(gauge);
+    card.appendChild(ci);
+
+    /* Animate the gauge fill after a brief delay */
+    requestAnimationFrame(function(){
+      setTimeout(function(){
+        var fill = gauge.querySelector('.flt-gauge-fill');
+        if(fill) fill.style.width = pct + '%';
+      }, 300);
+    });
+  }
+
+  /* Run once now since init() already called renderDashboard */
+  caeEnhanceDashboard();
+
+  /* ==================================================================
+     5. LOCK SCREEN — overlay injected into app-root
+     ================================================================== */
+  var lockOverlay = document.createElement('div');
+  lockOverlay.id = 'cae-lock-overlay';
+  lockOverlay.className = 'lock-overlay';
+  lockOverlay.innerHTML =
+    '<div class="lock-icon"><i class="fa-solid fa-face-smile"></i></div>' +
+    '<div class="lock-title">Crew Access Locked</div>' +
+    '<div class="lock-sub">Authenticate to continue</div>' +
+    '<div class="lock-hint">Tap anywhere to unlock</div>';
+  lockOverlay.addEventListener('click', function(){
+    lockOverlay.classList.remove('show');
+    showToast('Authenticated successfully', 'fa-face-smile');
+  });
+  appRoot.appendChild(lockOverlay);
+
+  /* Global function for settings to call */
+  window.caeLockApp = function(){
+    lockOverlay.classList.add('show');
+    closeSettings();
+  };
+
+  /* ==================================================================
+     6. SETTINGS ENHANCEMENTS — Lock App row + CAE Watermark
+        Hook into openSettings non-destructively.
+     ================================================================== */
+  var _origOpenSettings = window.openSettings;
+  window.openSettings = function(){
+    _origOpenSettings.apply(this, arguments);
+    caeEnhanceSettings();
+  };
+
+  function caeEnhanceSettings(){
+    var settingsList = document.querySelector('.settings-list');
+    if(!settingsList) return;
+
+    /* Avoid duplicate injection */
+    if(settingsList.querySelector('.cae-lock-row')) return;
+
+    /* Lock App row */
+    var lockRow = document.createElement('div');
+    lockRow.className = 'settings-row cae-lock-row';
+    lockRow.style.cursor = 'pointer';
+    lockRow.setAttribute('onclick', 'caeLockApp()');
+    lockRow.innerHTML =
+      '<div class="settings-row-icon"><i class="fa-solid fa-lock"></i></div>' +
+      '<div class="settings-row-text">' +
+        '<div class="settings-row-title">Lock App</div>' +
+        '<div class="settings-row-sub">Require Face ID to unlock</div>' +
+      '</div>' +
+      '<i class="fa-solid fa-chevron-right chev"></i>';
+
+    /* Insert before the log-out row */
+    var dangerIcon = settingsList.querySelector('.settings-row-icon-danger');
+    if(dangerIcon){
+      var logoutRow = dangerIcon.closest('.settings-row');
+      if(logoutRow) settingsList.insertBefore(lockRow, logoutRow);
+      else settingsList.appendChild(lockRow);
+    } else {
+      settingsList.appendChild(lockRow);
+    }
+
+    /* CAE Watermark */
+    var sheet = settingsList.parentElement;
+    if(sheet && !sheet.querySelector('.cae-watermark')){
+      var wm = document.createElement('div');
+      wm.className = 'cae-watermark';
+      wm.textContent = 'Powered by CAE Flightscape \u00B7 v6.4.2';
+      sheet.appendChild(wm);
+    }
+  }
+
+  /* ==================================================================
+     7. NAV BOUNCE ANIMATION on tap
+     ================================================================== */
+  var navBtns = document.querySelectorAll('.nav-btn');
+  for(var n = 0; n < navBtns.length; n++){
+    (function(btn){
+      btn.addEventListener('click', function(){
+        var icon = btn.querySelector('i');
+        if(!icon) return;
+        icon.style.transition = 'transform .15s cubic-bezier(.4,0,.2,1)';
+        icon.style.transform = 'translateY(-4px)';
+        setTimeout(function(){
+          icon.style.transform = 'translateY(0)';
+        }, 150);
+      });
+    })(navBtns[n]);
+  }
+
+})();
 </script>
 </body>
 </html>
