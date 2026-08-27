@@ -331,12 +331,26 @@ input{ font-family:inherit; }
 .cal-cell .flight-span-bar{
   position:absolute; left:-1px; right:-1px; bottom:0; height:2px;
   background:#111; border-radius:0; pointer-events:none; z-index:2;
+  position:absolute; left:0; right:0; bottom:0; height:3px;
+  background:#8E9AA8; border-radius:0; pointer-events:none; z-index:2;
+  background:#8E9AA8; border-radius:0; pointer-events:none; z-index:4;
 }
 #app-root .cal-cell.flight-span-cell{ overflow:visible; }
 .cal-cell .flight-span-bar.start{ border-radius:5px 0 0 0; }
 .cal-cell .flight-span-bar.end{ border-radius:0 5px 0 0; }
 .cal-cell .flight-span-bar.start.end{ border-radius:5px 5px 0 0; }
 :root[data-theme="dark"] .cal-cell .flight-span-bar{ background:#7C8793; }
+#app-root .cal-cell.flight-span-cell{ overflow:visible !important; }
+.cal-cell .flight-span-bar.single{ left:3px; right:3px; border-radius:3px; }
+.cal-cell .flight-span-bar.start{ left:3px; right:-2px; border-radius:3px 0 0 3px; }
+.cal-cell .flight-span-bar.single{ left:4px; right:4px; border-radius:3px; }
+.cal-cell .flight-span-bar.start{ left:4px; right:-2px; border-radius:3px 0 0 3px; }
+.cal-cell .flight-span-bar.middle{ left:-2px; right:-2px; border-radius:0; }
+.cal-cell .flight-span-bar.end{ left:-2px; right:3px; border-radius:0 3px 3px 0; }
+.cal-cell .flight-span-bar.end{ left:-2px; right:4px; border-radius:0 3px 3px 0; }
+.cal-cell.selected .flight-span-bar{ background:#CBD5E1; }
+:root[data-theme="dark"] .cal-cell .flight-span-bar{ background:#64748B; }
+:root[data-theme="dark"] .cal-cell.selected .flight-span-bar{ background:#94A3B8; }
 .cal-cell.selected .cal-ico{ color:#fff; }
 .cal-cell .cal-code{
   display:block; width:100%; padding:0 2px; overflow:hidden; text-overflow:ellipsis;
@@ -813,12 +827,6 @@ body{ background:var(--bg-outer); }
 #app-root .message-row.outgoing .message-bubble{ background:#1D4ED8; }
 #app-root .chat-avatar{ background:linear-gradient(135deg,#1D4ED8,var(--cae-blue)); }
 :root[data-theme="dark"] #app-root .message-row.outgoing .message-bubble{ background:#1E40AF; }
-
-/* ---- CAE Red accent line at very top of the app ---- */
-#app-root::before{
-  content:""; display:block; height:1px; flex-shrink:0;
-  background:linear-gradient(90deg,#DC2626 0%,#EF4444 50%,#DC2626 100%);
-}
 
 /* ---- 3. CAE Splash Screen ---- */
 .cae-splash{
@@ -1978,10 +1986,21 @@ function getDayDetailHTML(dateStr){
   return head + buildDutyRowsHTML(items, dateStr, "");
 }
 
+function isFlightTripDay(day, eventsMap){
+  const items = (eventsMap && eventsMap[day]) || [];
+  return items.some(item => {
+    if (item.type === "flight" || item.type === "layover" || item.continuation) return true;
+    if (item.type === "off" && item.note && /layover|post-duty/i.test(item.note)) return true;
+    if (item.type === "off" && item.note && /layover|san francisco|birmingham|overnight/i.test(item.note)) return true;
+    return false;
+  });
+}
+
 function flightSpanPosition(dateStr, eventsMap){
   const map = eventsMap || {};
   const hasFlight = day => (map[day] || []).some(item => item.type === "flight");
   if (!hasFlight(dateStr)) return "";
+  if (!isFlightTripDay(dateStr, eventsMap)) return "";
 
   const adjacentDate = (day, offset) => {
     const date = new Date(`${day}T12:00:00`);
@@ -1990,12 +2009,19 @@ function flightSpanPosition(dateStr, eventsMap){
   };
   const hasPreviousFlight = hasFlight(adjacentDate(dateStr, -1));
   const hasNextFlight = hasFlight(adjacentDate(dateStr, 1));
+  const hasPrevious = isFlightTripDay(adjacentDate(dateStr, -1), eventsMap);
+  const hasNext = isFlightTripDay(adjacentDate(dateStr, 1), eventsMap);
 
   // A single flight date is not a multi-day sequence and gets no bar.
   if (!hasPreviousFlight && !hasNextFlight) return "";
   if (!hasPreviousFlight) return "start";
   if (!hasNextFlight) return "end";
   return "middle";
+  if (!hasPrevious && !hasNext) return "single";
+  if (!hasPrevious && hasNext) return "start";
+  if (hasPrevious && hasNext) return "middle";
+  if (hasPrevious && !hasNext) return "end";
+  return "single";
 }
 
 function buildCalendarGrid(monthDate, opts){
