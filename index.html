@@ -168,6 +168,36 @@ input{ font-family:inherit; }
 .up-field .up-field-label{ font-size:11px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.3px; margin-bottom:3px; }
 .up-field .up-field-value{ font-size:15px; font-weight:600; color:var(--ink); }
 
+/* ---- Multi-sector flight styling (CAE Crew Access style) ---- */
+.upnext-sublabel{ font-size:12px; font-weight:600; color:var(--ink-muted); margin:-10px 0 14px; }
+.upnext-sectors{ display:flex; flex-direction:column; gap:10px; margin:12px 0 14px; }
+.upnext-sector-item{
+  background:var(--card-alt); border-radius:var(--radius-sm); padding:12px 14px;
+  border:1px solid var(--cae-border);
+}
+:root[data-theme="dark"] .upnext-sector-item{
+  background:var(--surface); border-color:var(--line);
+}
+.upnext-sector-head{
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;
+}
+.upnext-sector-fno{
+  font-family:var(--font-display); font-weight:700; font-size:14.5px; color:var(--ink);
+  display:flex; align-items:center; gap:6px;
+}
+.upnext-sector-fno i{ color:var(--cae-blue); font-size:12px; }
+.upnext-sector-airtime{
+  font-size:11.5px; font-weight:600; color:var(--ink-muted); font-family:var(--font-mono);
+}
+.upnext-sector-item .upnext-route{ margin-bottom:0; }
+.upnext-transit-tag{
+  display:inline-flex; align-items:center; gap:6px; align-self:center;
+  font-size:11px; font-weight:600; color:var(--ink-muted);
+  background:var(--card); padding:5px 12px; border-radius:14px;
+  border:1px dashed var(--line);
+}
+.upnext-transit-tag i{ font-size:10px; color:var(--orange); }
+
 /* ---- quick action circles ---- */
 .quick-actions{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:6px; }
 .qa-btn{ background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:8px; padding:6px 0; }
@@ -1890,38 +1920,89 @@ function switchView(name){
 /* ==========================================================================
    DASHBOARD
    ========================================================================== */
-function findTodayRosterItem(){
+function findTodayRosterItems(){
   const date = fmt(TODAY);
   const items = SCHEDULE[date] || [];
-  // An empty date is treated as Rest, so the dashboard always reflects today.
-  return { date, item: items[0] || { type:"off", note:"Rest" } };
+  const activeItems = items.filter(i => i.type !== "off");
+  return { date, items: activeItems.length ? activeItems : (items.length ? items : [{ type:"off", note:"Rest" }]) };
 }
+const findTodayRosterItem = () => {
+  const res = findTodayRosterItems();
+  return { date: res.date, item: res.items[0] };
+};
 
 function renderDashboard(){
-  const next = findTodayRosterItem();
+  const { date, items } = findTodayRosterItems();
   const card = document.getElementById("up-next-card");
+  const hasActiveDuties = items.some(i => i.type !== "off");
+  const isRest = !hasActiveDuties;
+  const isMultiFlight = items.length > 1 && items.every(i => i.type === "flight");
 
-  {
-    const { date, item } = next;
+  if (isMultiFlight){
+    const firstFlight = items[0];
+    const lastFlight = items[items.length - 1];
+    const flightNos = items.map(i => i.flightNo).join(" · ");
+    const routeChain = [firstFlight.dep, ...items.map(i => i.arr)].join(" → ");
+
+    let sectorsHtml = "";
+    items.forEach((it, idx) => {
+      if (idx > 0){
+        const prevFlight = items[idx - 1];
+        const transitMins = timeDiffMinutes(prevFlight.arrTime, it.depTime);
+        sectorsHtml += `
+          <div class="upnext-transit-tag">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i> Transit at ${it.dep} · ${fmtHrsMins(transitMins)}
+          </div>`;
+      }
+      const airtime = it.airtime || fmtHrsMins(flightDurationMinutes(it));
+      sectorsHtml += `
+        <div class="upnext-sector-item">
+          <div class="upnext-sector-head">
+            <div class="upnext-sector-fno"><i class="fa-solid fa-plane"></i> ${it.flightNo}</div>
+            <div class="upnext-sector-airtime">${airtime}</div>
+          </div>
+          <div class="upnext-route">
+            <div class="up-pt"><div class="code">${it.dep}</div><div class="time">${it.depTime}</div></div>
+            <div class="up-line"><i class="fa-solid fa-plane"></i></div>
+            <div class="up-pt"><div class="code">${it.arr}</div><div class="time">${it.arrTime}</div></div>
+          </div>
+        </div>`;
+    });
+
+    card.innerHTML = `
+      <div class="upnext-top">
+        <span class="upnext-label">Today's Roster</span>
+        <span class="upnext-status published">Published · ${items.length} Sectors</span>
+      </div>
+      <div class="upnext-duty" style="margin-bottom:4px;">${flightNos}</div>
+      <div class="upnext-sublabel">${items.length} Sectors · ${routeChain}</div>
+      <div class="upnext-sectors">${sectorsHtml}</div>
+      <div class="upnext-grid">
+        <div class="up-field"><div class="up-field-label">Base</div><div class="up-field-value">${firstFlight.dep}</div></div>
+        <div class="up-field"><div class="up-field-label">Duty Start</div><div class="up-field-value">${firstFlight.depTime}</div></div>
+        <div class="up-field"><div class="up-field-label">Duty End</div><div class="up-field-value">${lastFlight.arrTime}</div></div>
+      </div>`;
+  } else {
+    const item = items[0] || { type:"off", note:"Rest" };
     const isFlight = item.type === "flight";
-    const isRest = item.type === "off";
     const meta = dutyMeta(item.type);
+
     card.innerHTML = `
       <div class="upnext-top">
         <span class="upnext-label">Today's Roster</span>
         <span class="upnext-status ${isRest ? "unpublished" : "published"}">${isRest ? "Rest day" : "Published"}</span>
       </div>
-      <div class="upnext-duty">${isFlight ? item.flightNo : (isRest ? (item.note || "Rest") : meta.label + " (" + meta.label.toUpperCase() + ")")}</div>
+      <div class="upnext-duty">${isFlight ? (item.continuation ? `Arrival · ${item.flightNo}` : item.flightNo) : (isRest ? (item.note || "Rest") : meta.label + " (" + meta.label.toUpperCase() + ")")}</div>
       ${isFlight ? `
         <div class="upnext-route">
-          <div class="up-pt"><div class="code">${item.dep}</div><div class="time">${item.depTime}</div></div>
+          <div class="up-pt"><div class="code">${item.dep}</div><div class="time">${item.continuation ? "—" : item.depTime}</div></div>
           <div class="up-line"><i class="fa-solid fa-plane"></i></div>
           <div class="up-pt"><div class="code">${item.arr}</div><div class="time">${item.arrTime}</div></div>
         </div>
         <div class="upnext-grid">
-          <div class="up-field"><div class="up-field-label">Location</div><div class="up-field-value">${item.dep}</div></div>
-          <div class="up-field"><div class="up-field-label">Start</div><div class="up-field-value">${item.depTime}</div></div>
-          <div class="up-field"><div class="up-field-label">End</div><div class="up-field-value">${item.arrTime}</div></div>
+          <div class="up-field"><div class="up-field-label">${item.continuation ? "Arrival" : "Location"}</div><div class="up-field-value">${item.continuation ? item.arr : item.dep}</div></div>
+          <div class="up-field"><div class="up-field-label">${item.continuation ? "Time" : "Start"}</div><div class="up-field-value">${item.continuation ? item.arrTime : item.depTime}</div></div>
+          <div class="up-field"><div class="up-field-label">${item.continuation ? "Flight" : "End"}</div><div class="up-field-value">${item.continuation ? item.flightNo : item.arrTime}</div></div>
         </div>` : isRest ? `
         <div class="upnext-grid">
           <div class="up-field"><div class="up-field-label">Status</div><div class="up-field-value">No duties scheduled</div></div>
@@ -2445,6 +2526,11 @@ function timeToMinutes(t){
   const [h, m] = (t || "0:0").split(":").map(Number);
   return h * 60 + m;
 }
+function timeDiffMinutes(t1, t2){
+  let diff = timeToMinutes(t2) - timeToMinutes(t1);
+  if (diff < 0) diff += 24 * 60;
+  return diff;
+}
 function flightDurationMinutes(item){
   let diff = timeToMinutes(item.arrTime) - timeToMinutes(item.depTime);
   if (diff < 0) diff += 24 * 60; // crosses midnight
@@ -2452,7 +2538,7 @@ function flightDurationMinutes(item){
 }
 function fmtHrsMins(totalMinutes){
   const h = Math.floor(totalMinutes / 60), m = Math.round(totalMinutes % 60);
-  return `${h}h ${String(m).padStart(2,"0")}m`;
+  return `${String(h).padStart(2,"0")}h ${String(m).padStart(2,"0")}m`;
 }
 function computeMonthStats(monthDate){
   const year = monthDate.getFullYear(), month = monthDate.getMonth();
