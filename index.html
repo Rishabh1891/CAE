@@ -359,24 +359,14 @@ input{ font-family:inherit; }
 .cal-cell .cal-ico{ font-size:13px; color:var(--duty-icon-color, var(--ink-soft)); margin-top:1px; opacity:1; }
 .cal-cell .cal-duty-icon-image{ width:19px; height:19px; object-fit:contain; margin-top:1px; }
 .cal-cell .flight-span-bar{
-  position:absolute; left:-1px; right:-1px; bottom:0; height:2px;
-  background:#111; border-radius:0; pointer-events:none; z-index:2;
-  position:absolute; left:0; right:0; bottom:0; height:3px;
-  background:#8E9AA8; border-radius:0; pointer-events:none; z-index:2;
+  position:absolute; left:0; right:0; bottom:-4px; height:3px;
   background:#8E9AA8; border-radius:0; pointer-events:none; z-index:4;
+  margin-top:4px;
 }
-#app-root .cal-cell.flight-span-cell{ overflow:visible; }
-.cal-cell .flight-span-bar.start{ border-radius:5px 0 0 0; }
-.cal-cell .flight-span-bar.end{ border-radius:0 5px 0 0; }
-.cal-cell .flight-span-bar.start.end{ border-radius:5px 5px 0 0; }
-:root[data-theme="dark"] .cal-cell .flight-span-bar{ background:#7C8793; }
 #app-root .cal-cell.flight-span-cell{ overflow:visible !important; }
-.cal-cell .flight-span-bar.single{ left:3px; right:3px; border-radius:3px; }
-.cal-cell .flight-span-bar.start{ left:3px; right:-2px; border-radius:3px 0 0 3px; }
 .cal-cell .flight-span-bar.single{ left:4px; right:4px; border-radius:3px; }
 .cal-cell .flight-span-bar.start{ left:4px; right:-2px; border-radius:3px 0 0 3px; }
 .cal-cell .flight-span-bar.middle{ left:-2px; right:-2px; border-radius:0; }
-.cal-cell .flight-span-bar.end{ left:-2px; right:3px; border-radius:0 3px 3px 0; }
 .cal-cell .flight-span-bar.end{ left:-2px; right:4px; border-radius:0 3px 3px 0; }
 .cal-cell.selected .flight-span-bar{ background:#CBD5E1; }
 :root[data-theme="dark"] .cal-cell .flight-span-bar{ background:#64748B; }
@@ -1669,19 +1659,31 @@ const ROSTER = {
   "2026-09-17": [{type:"flight", flightNo:"AIC115", dep:"DEL", arr:"BOM", depTime:"17:00", arrTime:"19:25", airtime:"02h 25m", note:"Terminal 3",crew:{captains:["Anny Divya"],firstOfficers:["Rishabh Tripathi"],cabin:["Divya Menon","Samyuktha Rao","Aishwarya Pillai","Nithya Subramanian","Arjun Hegde", "Meera Kulkarni, Tanvi Bhat, Aditya Gowda, Revathi Chidambaram, Sneha Hedge, Pooja Sundaram, Keerthy Suresh, Vaishnavi Deshmukh, Shruti Venkatesh, Chirag Sen"]}},
     {type:"flight", flightNo:"AIC816", dep:"BOM", arr:"DEL", depTime:"21:00", arrTime:"23:15", airtime:"02h 15m", note:"Terminal 3", crew:{captains:["Anny Divya"],firstOfficers:["Rishabh Tripathi"],cabin:["Divya Menon","Samyuktha Rao","Aishwarya Pillai","Nithya Subramanian","Arjun Hegde", "Meera Kulkarni, Tanvi Bhat, Aditya Gowda, Revathi Chidambaram, Sneha Hedge, Pooja Sundaram, Keerthy Suresh, Vaishnavi Deshmukh, Shruti Venkatesh, Chirag Sen"]}}
   ],
-  "2026-09-18": [{type:"medical", location:"AIIMS Delhi", start:"09:00 AM", end:"04:00 PM", note:"Class 1 medical checkup"}],
-  "2026-09-19": [{type:"flight", flightNo:"AI173", aircraft:"B777-200LR", dep:"DEL", arr:"SFO", depTime:"03:55", arrTime:"07:00", airtime:"16h 35m", note:"International · Terminal 3", crew:{captains:[],firstOfficers:[],cabin:[]}}],
-  "2026-09-20": [{type:"layover", location:"San Francisco, USA", start:"09:00", end:"08:00+2", hotel:{name:"Hyatt Regency San Francisco Airport", address:"1333 Bayshore Highway, Burlingame, CA", phone:"+1 650 347 1234", transport:"Crew coach from SFO International Terminal", checkIn:"09:00", checkOut:"08:00 on 22 Sep"}, note:"International layover · Local time"}],
-  "2026-09-21": [{type:"off", note:"Rest · San Francisco layover"}],
-  "2026-09-22": [{type:"flight", flightNo:"AI174", aircraft:"B777-200LR", dep:"SFO", arr:"DEL", depTime:"10:30", arrTime:"14:45+1", airtime:"15h 45m", note:"International · Arrival Terminal 3", crew:{captains:[],firstOfficers:[],cabin:[]}}],
-  "2026-09-23": [{type:"flight", continuation:true, continuesFrom:"2026-09-22", flightNo:"AI174", aircraft:"B777-200LR", dep:"SFO", arr:"DEL", arrTime:"14:45", note:"Overnight arrival continuation · Terminal 3"}],
-  "2026-09-24": [{type:"flight", flightNo:"AIC113", aircraft:"B777-300ER", dep:"DEL", arr:"BHX", depTime:"11:20", arrTime:"18:15", airtime:"11h 25m", note:"International · Terminal 3", crew:{captains:[],firstOfficers:[],cabin:[]}}],
-  "2026-09-25": [{type:"off", note:"Rest · Birmingham layover"}],
-  "2026-09-26": [{type:"layover", location:"Birmingham, UK", start:"00:00", end:"18:30+1", hotel:{name:"Hilton Birmingham Metropole", address:"National Exhibition Centre, Birmingham B40 1PP", phone:"+44 121 780 4242", transport:"Crew coach from Birmingham Airport", checkIn:"Available", checkOut:"18:30 on 27 Sep"}, note:"International layover · Local time"}],
-  "2026-09-27": [{type:"flight", flightNo:"AIC114", aircraft:"B777-300ER", dep:"BHX", arr:"DEL", depTime:"21:30", arrTime:"12:10+1", airtime:"10h 10m", note:"International · Arrival Terminal 3", crew:{captains:[],firstOfficers:[],cabin:[]}}],
-  "2026-09-28": [{type:"flight", continuation:true, continuesFrom:"2026-09-27", flightNo:"AIC114", aircraft:"B777-300ER", dep:"BHX", arr:"DEL", arrTime:"12:10", note:"Overnight arrival continuation · Terminal 3"}],
+  "2026-09-18": [{type:"medical", location:"AIIMS Delhi", start:"09:00", end:"16:00", note:"Class 1 medical checkup"}],
+  "2026-09-19": [
+    {type:"flight", flightNo:"AI887", aircraft:"B777-300ER", dep:"DEL", arr:"BOM", depTime:"07:00", arrTime:"09:15", airtime:"02h 15m", note:"Terminal 3 → Terminal 2 · Widebody domestic", crew:{captains:["Ameya Attri"],firstOfficers:["Rishabh Tripathi"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Rahul Verma"]}},
+    {type:"flight", flightNo:"AI687", aircraft:"B777-300ER", dep:"BOM", arr:"DEL", depTime:"11:30", arrTime:"13:45", airtime:"02h 15m", note:"Terminal 2 → Terminal 3", crew:{captains:["Ameya Attri"],firstOfficers:["Rishabh Tripathi"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Rahul Verma"]}}
+  ],
+  "2026-09-20": [{type:"off", note:"Rest · Pre-flight mandatory rest"}],
+  "2026-09-21": [{type:"flight", flightNo:"AI173", aircraft:"B777-200LR", dep:"DEL", arr:"SFO", depTime:"04:00", arrTime:"07:00", airtime:"16h 00m", note:"International · Terminal 3", crew:{captains:["Ameya Attri","Kunwar Pratap Singh"],firstOfficers:["Rishabh Tripathi","Sahil Pasricha"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Ananya Iyer","Rahul Verma","Kavita Kullupati","Madhuri Sharma","Ankit Vats","Kalyani Mukherji","Meenakshi Sati","Sheena Khan","Mohana Chaturvedi"]}}],
+  "2026-09-22": [{type:"layover", location:"San Francisco, USA", start:"09:00", end:"08:00+2", hotel:{name:"Hyatt Regency San Francisco Airport", address:"1333 Bayshore Highway, Burlingame, CA", phone:"+1 650 347 1234", transport:"Crew coach from SFO International Terminal", checkIn:"09:00", checkOut:"08:00 on 24 Sep"}, note:"International layover · Local time"}],
+  "2026-09-23": [{type:"off", note:"Rest · San Francisco layover"}],
+  "2026-09-24": [{type:"flight", flightNo:"AI174", aircraft:"B777-200LR", dep:"SFO", arr:"DEL", depTime:"10:30", arrTime:"14:45+1", airtime:"15h 45m", note:"International · Arrival Terminal 3", crew:{captains:["Ameya Attri","Kunwar Pratap Singh"],firstOfficers:["Rishabh Tripathi","Sahil Pasricha"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Ananya Iyer","Rahul Verma","Kavita Kullupati","Madhuri Sharma","Ankit Vats","Kalyani Mukherji","Meenakshi Sati","Sheena Khan","Mohana Chaturvedi"]}}],
+  "2026-09-25": [
+    {type:"flight", continuation:true, continuesFrom:"2026-09-24", flightNo:"AI174", aircraft:"B777-200LR", dep:"SFO", arr:"DEL", arrTime:"14:45", note:"Overnight arrival continuation · Terminal 3"},
+    {type:"off", start:"14:45", note:"Post-flight mandatory rest"}
+  ],
+  "2026-09-26": [{type:"off", note:"Rest"}],
+  "2026-09-27": [{type:"off", note:"Rest"}],
+  "2026-09-28": [
+    {type:"flight", flightNo:"AI839", aircraft:"B777-300ER", dep:"DEL", arr:"HYD", depTime:"16:00", arrTime:"18:15", airtime:"02h 15m", note:"Terminal 3 → Terminal 1 · Domestic widebody rotation", crew:{captains:["Anny Divya"],firstOfficers:["Rishabh Tripathi"],cabin:["Divya Menon","Samyuktha Rao","Arjun Hegde","Sneha Hedge"]}},
+    {type:"flight", flightNo:"AI840", aircraft:"B777-300ER", dep:"HYD", arr:"DEL", depTime:"19:45", arrTime:"22:00", airtime:"02h 15m", note:"Terminal 1 → Terminal 3", crew:{captains:["Anny Divya"],firstOfficers:["Rishabh Tripathi"],cabin:["Divya Menon","Samyuktha Rao","Arjun Hegde","Sneha Hedge"]}}
+  ],
   "2026-09-29": [{type:"off", note:"Rest"}],
-  "2026-09-30": [{type:"flight", flightNo:"AI173", aircraft:"B777-200LR", dep:"DEL", arr:"SFO", depTime:"03:55", arrTime:"07:00", airtime:"16h 35m", note:"International · Terminal 3", crew:{captains:[],firstOfficers:[],cabin:[]}}],
+  "2026-09-30": [
+    {type:"flight", flightNo:"AI887", aircraft:"B777-300ER", dep:"DEL", arr:"BOM", depTime:"13:30", arrTime:"15:45", airtime:"02h 15m", note:"Flight Operations Line Check · Terminal 3 → Terminal 2", crew:{captains:["Capt. C. V. Madhu"],firstOfficers:["Rishabh Tripathi"],cabin:["Shreya Nair","Kritika Reddy","Rahul Verma"]}},
+    {type:"flight", flightNo:"AI687", aircraft:"B777-300ER", dep:"BOM", arr:"DEL", depTime:"17:30", arrTime:"19:45", airtime:"02h 15m", note:"Terminal 2 → Terminal 3", crew:{captains:["Capt. C. V. Madhu"],firstOfficers:["Rishabh Tripathi"],cabin:["Shreya Nair","Kritika Reddy","Rahul Verma"]}}
+  ]
 
 
 };
@@ -2523,8 +2525,9 @@ function buildDutyRowsHTML(items, dateStr, keyPrefix){
 let scheduleMode = "month";
 
 function timeToMinutes(t){
-  const [h, m] = (t || "0:0").split(":").map(Number);
-  return h * 60 + m;
+  const clean = String(t || "0:0").replace(/\+[0-9]+/g, "").trim();
+  const [h, m] = clean.split(":").map(Number);
+  return (h || 0) * 60 + (m || 0);
 }
 function timeDiffMinutes(t1, t2){
   let diff = timeToMinutes(t2) - timeToMinutes(t1);
@@ -2532,6 +2535,10 @@ function timeDiffMinutes(t1, t2){
   return diff;
 }
 function flightDurationMinutes(item){
+  if (item && item.airtime){
+    const m = String(item.airtime).match(/(\d+)h\s*(\d+)m/);
+    if (m) return Number(m[1]) * 60 + Number(m[2]);
+  }
   let diff = timeToMinutes(item.arrTime) - timeToMinutes(item.depTime);
   if (diff < 0) diff += 24 * 60; // crosses midnight
   return diff;
