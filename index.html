@@ -357,7 +357,10 @@ input{ font-family:inherit; }
 .cal-cell.today::after{ content:""; position:absolute; top:3px; right:10px; width:4px; height:4px; border-radius:50%; background:var(--orange); }
 .cal-cell.selected{ background:var(--navy); color:#fff; }
 .cal-cell .cal-ico{ font-size:13px; color:var(--duty-icon-color, var(--ink-soft)); margin-top:1px; opacity:1; }
-.cal-cell .cal-duty-icon-image{ width:19px; height:19px; object-fit:contain; margin-top:1px; }
+.cal-cell .cal-duty-icon-image{ width:19px; height:19px; object-fit:contain; margin-top:1px; display:inline-flex; align-items:center; justify-content:center; }
+.duty-item .di-duty-icon-image{ width:22px; height:22px; object-fit:contain; display:inline-flex; align-items:center; justify-content:center; }
+.training-person-cal-icon{ width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; }
+.duty-item .training-person-cal-icon{ width:22px; height:22px; }
 .cal-cell .flight-span-bar{
   position:absolute; left:0; right:0; bottom:-4px; height:3px;
   background:#8E9AA8; border-radius:0; pointer-events:none; z-index:4;
@@ -371,7 +374,13 @@ input{ font-family:inherit; }
 .cal-cell.selected .flight-span-bar{ background:#CBD5E1; }
 :root[data-theme="dark"] .cal-cell .flight-span-bar{ background:#64748B; }
 :root[data-theme="dark"] .cal-cell.selected .flight-span-bar{ background:#94A3B8; }
-.cal-cell.selected .cal-ico{ color:#fff; }
+.cal-cell.selected .cal-ico{ color:#fff !important; }
+.cal-cell.selected i.fa-star{ color:#fff !important; }
+.cal-cell.selected .training-person-cal-icon svg rect{ fill:rgba(255,255,255,.3); stroke:#fff; }
+.cal-cell.selected .training-person-cal-icon svg path{ stroke:#fff; fill:#fff; }
+.cal-cell.selected .training-person-cal-icon svg circle{ fill:#fff; stroke:#fff; }
+:root[data-theme="dark"] .cal-cell i.fa-star{ color:#D12B6D; }
+:root[data-theme="dark"] .cal-cell.selected i.fa-star{ color:#fff !important; }
 .cal-cell .cal-code{
   display:block; width:100%; padding:0 2px; overflow:hidden; text-overflow:ellipsis;
   white-space:nowrap; font-size:8.5px; line-height:1.15; font-weight:600; color:var(--ink-muted);
@@ -561,17 +570,72 @@ input{ font-family:inherit; }
 .form-block{ margin-top:16px; }
 .form-block label{ display:block; font-size:12px; font-weight:600; color:var(--ink-muted); margin-bottom:8px; }
 .form-block input{
-  width:100%; padding:13px 14px; border:1px solid transparent; border-radius:var(--radius-sm); font-size:14px; margin-bottom:16px; outline:none; background:var(--card); color:var(--ink);
+  width:100%; padding:13px 14px; border:1px solid var(--line, transparent); border-radius:var(--radius-sm); font-size:14px; margin-bottom:16px; outline:none; background:var(--card); color:var(--ink);
 }
-.form-block input::placeholder{ color:#ADA9C0; }
-.form-block input:focus{ border-color:var(--navy); background:#fff; box-shadow:0 0 0 3px rgba(59,71,89,.08); }
+.form-block input::placeholder{ color:var(--ink-muted); opacity:0.8; }
+.form-block input:focus{ border-color:var(--blue, #2969F2); background:var(--card); color:var(--ink); box-shadow:0 0 0 3px rgba(41,105,242,.12); }
+.swap-date-dropdown{
+  width:100%; padding:12px 14px; border:1px solid var(--line, transparent); border-radius:var(--radius-sm); font-size:13px; margin-bottom:10px; outline:none; background:var(--card); color:var(--ink); font-weight:600; cursor:pointer;
+}
+.swap-date-dropdown:focus{ border-color:var(--blue, #2969F2); background:var(--card); color:var(--ink); }
+
+/* Explicit light/dark mode typography for inputs */
+:root .form-block input,
+:root #swap-crew-id,
+:root .swap-date-dropdown{
+  color:#1E293B;
+  background:var(--card);
+}
+:root[data-theme="dark"] .form-block input,
+:root[data-theme="dark"] #swap-crew-id,
+:root[data-theme="dark"] .swap-date-dropdown{
+  color:#FFFFFF !important;
+  background:var(--card) !important;
+  border-color:var(--line) !important;
+}
+:root[data-theme="dark"] .form-block input:focus,
+:root[data-theme="dark"] #swap-crew-id:focus,
+:root[data-theme="dark"] .swap-date-dropdown:focus{
+  color:#FFFFFF !important;
+  background:#1B1E27 !important;
+  border-color:#3B82F6 !important;
+  box-shadow:0 0 0 3px rgba(59,130,246,.2) !important;
+}
+:root[data-theme="dark"] .form-block input::placeholder{
+  color:#8A90A0 !important;
+}
+:root[data-theme="dark"] .swap-date-dropdown option{
+  background:#1B1E27;
+  color:#FFFFFF;
+}
+
 .selected-duty-preview{ background:var(--card-alt); border-radius:var(--radius-sm); padding:13px 14px; font-size:12.5px; color:var(--ink-muted); margin-bottom:16px; line-height:1.5; }
 .selected-duty-preview b{ color:var(--ink); display:block; font-size:15px; margin-bottom:2px; font-family:var(--font-mono); font-weight:600; }
 .btn-row{ display:flex; gap:10px; }
-.btn-outline{ flex:1; background:var(--card); border:none; color:var(--ink-soft); padding:13px; border-radius:var(--radius-sm); font-weight:700; font-size:12.5px; letter-spacing:.3px; text-transform:uppercase; }
-.btn-solid{ flex:1; background:var(--card); color:var(--ink-muted); border:none; padding:13px; border-radius:var(--radius-sm); font-weight:700; font-size:12.5px; letter-spacing:.3px; text-transform:uppercase; transition:all .15s ease; }
+.btn-outline{ flex:1; background:var(--card); border:none; color:var(--ink-soft); padding:13px; border-radius:var(--radius-sm); font-weight:700; font-size:12.5px; letter-spacing:.3px; text-transform:uppercase; cursor:pointer; }
+.btn-solid{ flex:1; background:var(--card); color:var(--ink-muted); border:none; padding:13px; border-radius:var(--radius-sm); font-weight:700; font-size:12.5px; letter-spacing:.3px; text-transform:uppercase; transition:all .15s ease; cursor:pointer; }
 .btn-solid.is-ready{ background:var(--navy); color:#fff; }
 .details-panel{ font-size:12.5px; color:var(--ink-muted); background:var(--card-alt); padding:13px 14px; border-radius:var(--radius-sm); margin-bottom:16px; line-height:1.7; }
+
+/* Pilot Profile Card in Swap */
+.pilot-profile-card{
+  background:var(--card); border-radius:12px; padding:14px; box-shadow:0 4px 14px -4px rgba(0,0,0,.08); border:1px solid var(--line, transparent);
+}
+.pp-header{ display:flex; gap:12px; align-items:center; }
+.pp-avatar-wrap{ width:52px; height:52px; border-radius:50%; overflow:hidden; flex-shrink:0; background:var(--navy); border:2px solid var(--surface); display:flex; align-items:center; justify-content:center; }
+.pp-avatar{ width:100%; height:100%; object-fit:cover; display:block; }
+.pp-avatar-fallback{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:16px; font-family:var(--font-display); }
+.pp-info{ flex:1; min-width:0; }
+.pp-name{ font-weight:700; font-size:14.5px; color:var(--ink); line-height:1.25; }
+.pp-rank-badge{ display:inline-flex; align-items:center; gap:5px; font-size:11.5px; color:var(--blue, #2969F2); font-weight:600; margin-top:2px; }
+.pp-details-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; font-size:12px; color:var(--ink-muted); }
+.pp-tag{ background:var(--card-alt); padding:3px 7px; border-radius:6px; }
+.pp-tag b{ color:var(--ink); }
+.pp-footer{ display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:10px; border-top:1px solid var(--line); font-size:11.5px; }
+.pp-status-pill{ display:inline-flex; align-items:center; gap:5px; font-weight:600; }
+.pp-status-pill.eligible{ color:#16A34A; }
+.pp-airline-tag{ color:var(--ink-muted); font-weight:600; }
+.pilot-empty-note{ font-size:12.5px; color:var(--ink-muted); display:flex; align-items:center; gap:8px; }
 
 /* ---------------------------------------------------------------------
    TRADE BOARD / CHAT / DOCUMENTS
@@ -1265,7 +1329,10 @@ body{ background:var(--bg-outer); }
         </div>
 
         <div class="form-block">
-          <label>Requesting duty swap for</label>
+          <label for="swap-date-select">Requesting duty swap for</label>
+          <select id="swap-date-select" class="swap-date-dropdown" onchange="selectSwapDate(this.value)">
+            <option value="">-- Select or click a date on calendar --</option>
+          </select>
           <div class="selected-duty-preview" id="swap-selected-preview">Select a date on the calendar above.</div>
 
           <label for="swap-crew-id">Crew member to swap with</label>
@@ -1274,7 +1341,7 @@ body{ background:var(--bg-outer); }
           <div class="details-panel hidden" id="swap-details-panel"></div>
 
           <div class="btn-row">
-            <button class="btn-outline" onclick="toggleSwapDetails()">Show details</button>
+            <button class="btn-outline" id="swap-details-toggle-btn" onclick="toggleSwapDetails()">Show details</button>
             <button class="btn-solid" id="swap-confirm-btn" onclick="submitSwapRequest()" disabled>Confirm</button>
           </div>
         </div>
@@ -1562,10 +1629,10 @@ const DUTY_TYPES = {
   flight:   { icon: "fa-plane-up",         bg: "#FBE3E3", fg: "#C62828", label: "Flight" },
   report:   { icon: "fa-right-to-bracket", bg: "#F1E6D4", fg: "#B98A52", label: "Report" },
   reserve:  { icon: "fa-clock",            bg: "#DBF0EC", fg: "#34A79C", label: "Reserve" },
-  training: { icon: "fa-graduation-cap",   bg: "#E3ECFB", fg: "#2F6FED", label: "Training" },
+  training: { icon: "fa-calendar-user",    bg: "#FCE7F3", fg: "#D12B6D", label: "Training" },
   medical:  { icon: "fa-stethoscope",      bg: "#FCE7E9", fg: "#C23B4A", label: "Class 1 Medical" },
-  layover:  { icon: "fa-hotel",              bg: "#F3E3EC", fg: "#B4507C", label: "Layover" },
-  off:      { icon: "fa-bed",              bg: "#EEE9F7", fg: "#7E6BA8", label: "Rest" }
+  layover:  { icon: "fa-bed",              bg: "#F3E3EC", fg: "#B4507C", label: "Layover" },
+  off:      { icon: "fa-star",             bg: "#FCE7F3", fg: "#D12B6D", label: "Rest" }
 };
 
 const SCHEDULE_IMAGE_ICONS = {
@@ -1574,11 +1641,26 @@ const SCHEDULE_IMAGE_ICONS = {
 };
 
 function scheduleImageIcon(item, className){
+  const cls = className || "";
+  if (item.type === "training"){
+    return `<span class="${cls} training-person-cal-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;">
+        <rect x="2" y="3.5" width="13" height="13" rx="2.5" fill="#FCE7F3" stroke="#D12B6D" stroke-width="1.6"/>
+        <path d="M2 7.5H15" stroke="#D12B6D" stroke-width="1.5"/>
+        <path d="M5 2V4.5M12 2V4.5" stroke="#D12B6D" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="16.5" cy="13" r="3.2" fill="#D12B6D" stroke="#FFFFFF" stroke-width="1.5"/>
+        <path d="M11.5 21.5C11.5 18.5 13.8 17.2 16.5 17.2C19.2 17.2 21.5 18.5 21.5 21.5" fill="#D12B6D" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </span>`;
+  }
+  if (item.type === "off"){
+    return `<i class="fa-solid fa-star cal-ico ${cls}" style="color:#D12B6D; font-size:13px;" aria-hidden="true"></i>`;
+  }
   if (item.type !== "flight" && item.type !== "report") return "";
   const isDutyExit = item.type === "report" || item.continuation;
   const src = isDutyExit ? SCHEDULE_IMAGE_ICONS.dutyExit : SCHEDULE_IMAGE_ICONS.flight;
   const alt = isDutyExit ? "Reporting or duty exit" : "Flight";
-  return `<img class="${className}" src="${src}" alt="${alt}">`;
+  return `<img class="${cls}" src="${src}" alt="${alt}">`;
 }
 
 /* ---- Airport reference info (used by the "Report" duty drill-down) -----
@@ -1698,6 +1780,127 @@ let SWAPS = [
   { id:3, direction:"outgoing", status:"accepted", date:"2026-08-15", route:"DEL Training",       counterparty:"Priya Menon",   crewId:"CA1042", note:"" }
 ];
 let swapIdCounter = 4;
+
+/* ==========================================================================
+   CREW DIRECTORY FOR DUTY SWAPS
+   Crew IDs available for initiating swap:
+   - Captain Zoya Agarwal: 46296492
+   - Captain Anny Divya: 37592648
+   - First Officer Amritulya: 00149283
+   - First Officer Rohit Lalit Lalla: 10142957
+   - First Officer Laxmi Joshi: 39624730
+   - First Officer Malishka Rajanna: 42555158
+   - Captain Devika Vahiramuthry: 09628492
+   ========================================================================== */
+const KNOWN_CREW_MEMBERS = {
+  "46296492": {
+    name: "Captain Zoya Agarwal",
+    rank: "Captain",
+    crewId: "46296492",
+    base: "DEL",
+    fleet: "B777 / B787",
+    image: "https://upload.wikimedia.org/wikipedia/commons/7/75/Zephyr_property.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  "37592648": {
+    name: "Captain Anny Divya",
+    rank: "Captain",
+    crewId: "37592648",
+    base: "DEL",
+    fleet: "B777",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT43isbw46R28OTK0HGv5gaPYD-TiZrQIjXoUQ4K4SqEwI_umxp8O9gtOMz5ar7NAAZHDOqyQ&s"
+  },
+  "00149283": {
+    name: "First Officer Amritulya",
+    rank: "First Officer",
+    crewId: "00149283",
+    base: "DEL",
+    fleet: "B777",
+    image: "https://media.licdn.com/dms/image/v2/D4D03AQHbJVqG9NKBeQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1675868113949?e=2147483647&v=beta&t=tSQ_Gj7dkbGuMT6F0pO7_jQxm8AAP6tqr8fT_e12Mbs"
+  },
+  "10142957": {
+    name: "First Officer Rohit Lalit Lalla",
+    rank: "First Officer",
+    crewId: "10142957",
+    base: "BOM",
+    fleet: "B777",
+    image: "https://media.licdn.com/dms/image/v2/D4D03AQEt_0-tuzacDA/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1694108487887?e=2147483647&v=beta&t=PzJUNm-y-e8wRCUQZ6TKQvvmpIoXj4KXaDkTqDIcq6U"
+  },
+  "39624730": {
+    name: "First Officer Laxmi Joshi",
+    rank: "First Officer",
+    crewId: "39624730",
+    base: "DEL",
+    fleet: "B777",
+    image: "https://media.licdn.com/dms/image/v2/D4E03AQHrmRFn06Y1jQ/profile-displayphoto-shrink_800_800/B4EZdkadGkHYAg-/0/1749736347710?e=1790812800&v=beta&t=ybdckyclrPE8x8LcDneq1K9rekUnfMpXwbe-Fx5Zyh8"
+  },
+  "42555158": {
+    name: "First Officer Malishka Rajanna",
+    rank: "First Officer",
+    crewId: "42555158",
+    base: "BLR",
+    fleet: "B777",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAkoMv2XW3JZTXC5c9rzCLjq7X-XZznTSSYRzHECcFliBpfOs5X5guKz6r&s=10"
+  },
+  "09628492": {
+    name: "Captain Devika Vahiramuthry",
+    rank: "Captain",
+    crewId: "09628492",
+    base: "MAA",
+    fleet: "B777",
+    image: "https://static.toiimg.com/thumb/imgsize-23456,msid-80207648,width-600,resizemode-4/80207648.jpg"
+  }
+};
+
+function getPilotByCrewId(id){
+  const cleanId = String(id || "").trim();
+  if (!cleanId) return null;
+  if (KNOWN_CREW_MEMBERS[cleanId]) return KNOWN_CREW_MEMBERS[cleanId];
+  const stripped = cleanId.replace(/^0+/, "");
+  const match = Object.keys(KNOWN_CREW_MEMBERS).find(k => k === cleanId || (stripped && k.replace(/^0+/, "") === stripped));
+  if (match) return KNOWN_CREW_MEMBERS[match];
+  return null;
+}
+
+function renderPilotDetailCard(crewId){
+  const id = String(crewId || "").trim();
+  if (!id){
+    return `
+      <div class="pilot-empty-note">
+        <i class="fa-solid fa-circle-info" style="color:var(--blue, #2969F2);"></i> Enter a Crew ID above (e.g. <b>46296492</b>, <b>37592648</b>, <b>00149283</b>) to view their profile.
+      </div>`;
+  }
+  const pilot = getPilotByCrewId(id) || {
+    name: `Crew Member (${id})`,
+    rank: "First Officer",
+    crewId: id,
+    base: "DEL",
+    fleet: "Boeing 777",
+    image: ""
+  };
+
+  const hasPhoto = !!pilot.image;
+  return `
+    <div class="pilot-profile-card">
+      <div class="pp-header">
+        <div class="pp-avatar-wrap">
+          ${hasPhoto ? `<img class="pp-avatar" src="${pilot.image}" alt="${pilot.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ""}
+          <div class="pp-avatar-fallback" style="${hasPhoto ? "display:none;" : "display:flex;"}">${initials(pilot.name)}</div>
+        </div>
+        <div class="pp-info">
+          <div class="pp-name">${pilot.name}</div>
+          <div class="pp-rank-badge"><i class="fa-solid fa-plane"></i> ${pilot.rank} · ${pilot.fleet}</div>
+          <div class="pp-details-row">
+            <span class="pp-tag"><i class="fa-solid fa-id-badge"></i> ID: <b>${pilot.crewId}</b></span>
+            <span class="pp-tag"><i class="fa-solid fa-location-dot"></i> Base: <b>${pilot.base}</b></span>
+          </div>
+        </div>
+      </div>
+      <div class="pp-footer">
+        <span class="pp-status-pill eligible"><i class="fa-solid fa-circle-check"></i> Eligible for Duty Trade</span>
+        <span class="pp-airline-tag">Air India Fleet</span>
+      </div>
+    </div>`;
+}
 
 /* ---- Mock trade board ---------------------------------------------------*/
 const TRADE_BOARD = [
@@ -2064,7 +2267,7 @@ function getDayDetailHTML(dateStr){
     return head + `<div class="empty-state"><i class="fa-regular fa-calendar"></i><p>No duties scheduled — day off.</p></div>`;
   }
   if (items.length === 1 && items[0].type === "off"){
-    return head + `<div class="empty-state"><i class="fa-solid fa-bed"></i><p>${items[0].note || "Rest"}. Enjoy the rest!</p></div>`;
+    return head + `<div class="empty-state"><i class="fa-solid fa-star" style="color:#D12B6D;"></i><p>${items[0].note || "Rest"}. Enjoy the rest!</p></div>`;
   }
   return head + buildDutyRowsHTML(items, dateStr, "");
 }
@@ -2139,17 +2342,19 @@ function buildCalendarGrid(monthDate, opts){
         codeHtml = `<span class="cal-code">${primary.arr || ""}${includesRest ? " + Rest" : ""}</span>`;
         if (includesRest) dutyMeaning = `${meta.label} to ${primary.arr || "destination"} and Rest`;
       }
-      if (primary.type === "training") codeHtml = `<span class="cal-code">${primary.location || ""}</span>`;
+      if (primary.type === "training") codeHtml = `<span class="cal-code">${primary.location || "Training"}</span>`;
       if (primary.type === "report") codeHtml = `<span class="cal-code">${primary.start || ""}</span>`;
       if (primary.type === "medical") codeHtml = `<span class="cal-code">${primary.start || "Medical"}</span>`;
       if (primary.type === "reserve") codeHtml = `<span class="cal-code">${reserveLocationLabel(primary)}</span>`;
       if (primary.type === "layover") codeHtml = `<span class="cal-code">${(primary.location || "Layover").split(",")[0]}</span>`;
+      if (primary.type === "off") codeHtml = `<span class="cal-code">DEL</span>`;
     }
 
     cells.push(`
       <button type="button"
               class="cal-cell ${isToday ? "today" : ""} ${isSelected ? "selected" : ""} ${flightSpanClass ? "flight-span-cell" : ""}"
               data-date="${dateStr}"
+              ${opts && opts.onSelectFn ? `onclick="${opts.onSelectFn}('${dateStr}')"` : ""}
               title="${dutyMeaning}"
               aria-label="${prettyDate(dateStr, {weekday:'long', day:'numeric', month:'long'})}${primary ? ` — ${dutyMeaning}` : ''}">
         <span>${day}</span>${iconHtml}${codeHtml}${flightSpanClass ? `<span class="flight-span-bar ${flightSpanClass}" aria-hidden="true"></span>` : ""}
@@ -2742,12 +2947,18 @@ function respondSwap(id, newStatus){
 
 /* ---- New swap request flow (calendar-driven, mirrors reference design) --*/
 function openSwapRequest(){
-  swapSelectedDate = null;
+  swapViewMonth = new Date(scheduleViewMonth || TODAY);
+  swapSelectedDate = scheduleSelectedDate || null;
   document.getElementById("swap-crew-id").value = "";
-  document.getElementById("swap-details-panel").classList.add("hidden");
+  const panel = document.getElementById("swap-details-panel");
+  panel.classList.add("hidden");
+  panel.innerHTML = "";
+  const toggleBtn = document.getElementById("swap-details-toggle-btn");
+  if (toggleBtn) toggleBtn.textContent = "Show Details";
   document.getElementById("swap-confirm-btn").disabled = true;
   document.getElementById("swap-confirm-btn").classList.remove("is-ready");
   renderSwapCalendar();
+  if (swapSelectedDate) selectSwapDate(swapSelectedDate);
   switchView("swap-request");
 }
 function renderSwapCalendar(){
@@ -2755,7 +2966,34 @@ function renderSwapCalendar(){
   document.getElementById("swap-month-label").textContent = label;
   document.getElementById("swap-month-label-2").textContent = label;
   document.getElementById("swap-cal-days").innerHTML =
-    buildCalendarGrid(swapViewMonth, { selected: swapSelectedDate, eventsMap: SCHEDULE, onSelectFn: "selectSwapDate" });
+    buildCalendarGrid(swapViewMonth, { selected: swapSelectedDate, eventsMap: SCHEDULE, onSelectFn: "selectSwapDate", showFlightSpans: true });
+
+  // Populate the date dropdown in the Requesting duty swap for block
+  const year = swapViewMonth.getFullYear(), month = swapViewMonth.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const select = document.getElementById("swap-date-select");
+  if (select){
+    let optsHtml = `<option value="">-- Select or click a date on calendar --</option>`;
+    for (let day = 1; day <= daysInMonth; day++){
+      const dStr = fmt(new Date(year, month, day));
+      const items = (SCHEDULE[dStr] || []).filter(i => i.type !== "off");
+      let dutySummary = "DEL · Rest";
+      if (items.length){
+        if (items.length > 1 && items[0].type === "flight"){
+          dutySummary = `${items.map(it => it.flightNo).join(" · ")} (${items[0].dep}→${items[items.length - 1].arr})`;
+        } else if (items[0].type === "flight"){
+          dutySummary = `${items[0].flightNo} (${items[0].dep}→${items[0].arr})`;
+        } else {
+          dutySummary = dutyMeta(items[0].type).label;
+        }
+      }
+      const isSel = dStr === swapSelectedDate ? "selected" : "";
+      optsHtml += `<option value="${dStr}" ${isSel}>${prettyDate(dStr, {weekday:"short", day:"2-digit", month:"short"})} — ${dutySummary}</option>`;
+    }
+    select.innerHTML = optsHtml;
+    select.value = swapSelectedDate || "";
+  }
+
   updateSwapPreview();
 }
 function changeSwapMonth(delta){
@@ -2763,30 +3001,43 @@ function changeSwapMonth(delta){
   renderSwapCalendar();
 }
 function selectSwapDate(dateStr){
+  if (!dateStr) return;
   swapSelectedDate = dateStr;
+  const select = document.getElementById("swap-date-select");
+  if (select) select.value = dateStr;
   renderSwapCalendar();
   validateSwapForm();
 }
 function updateSwapPreview(){
   const box = document.getElementById("swap-selected-preview");
   if (!swapSelectedDate){
-    box.innerHTML = "Select a date on the calendar above.";
+    box.innerHTML = "Select a date on the calendar above or use the dropdown.";
     return;
   }
   const items = (SCHEDULE[swapSelectedDate] || []).filter(i => i.type !== "off");
-  const label = items.length
-    ? (items[0].type === "flight" ? `${items[0].flightNo} · ${items[0].dep} → ${items[0].arr}` : dutyMeta(items[0].type).label)
-    : "Day off";
-  box.innerHTML = `<b>${prettyDate(swapSelectedDate, {day:"2-digit", month:"short", year:"numeric"})}</b>${label} · 1-day swap · no layovers`;
+  let dutyText = "";
+  if (items.length){
+    if (items.length > 1 && items[0].type === "flight"){
+      dutyText = `${items.map(it => it.flightNo).join(" · ")} · ${items[0].dep} → ${items[0].arr} → ${items[1].arr}`;
+    } else if (items[0].type === "flight"){
+      dutyText = `${items[0].flightNo} · ${items[0].dep} → ${items[0].arr} (${items[0].airtime || "Flight"})`;
+    } else {
+      dutyText = `${dutyMeta(items[0].type).label} · ${items[0].location || items[0].start || "Scheduled"}`;
+    }
+  } else {
+    dutyText = "DEL · Scheduled Rest";
+  }
+  box.innerHTML = `<b>${prettyDate(swapSelectedDate, {weekday:"short", day:"2-digit", month:"short", year:"numeric"})}</b>${dutyText} · 1-day duty trade eligible`;
 }
 function toggleSwapDetails(){
   const panel = document.getElementById("swap-details-panel");
+  const toggleBtn = document.getElementById("swap-details-toggle-btn");
+  const crewId = document.getElementById("swap-crew-id").value.trim();
   panel.classList.toggle("hidden");
-  if (!panel.classList.contains("hidden")){
-    panel.innerHTML = `
-      Swap requests are reviewed by Crew Scheduling once the receiving pilot accepts.
-      Both duties must match qualification, currency, and duty-time limits before the trade is finalized.
-      You'll be notified in Chat and on the Dashboard as the status changes.`;
+  const isShown = !panel.classList.contains("hidden");
+  if (toggleBtn) toggleBtn.textContent = isShown ? "Hide Details" : "Show Details";
+  if (isShown){
+    panel.innerHTML = renderPilotDetailCard(crewId);
   }
 }
 function validateSwapForm(){
@@ -2795,6 +3046,12 @@ function validateSwapForm(){
   const btn = document.getElementById("swap-confirm-btn");
   btn.disabled = !ready;
   btn.classList.toggle("is-ready", ready);
+
+  // Live update details panel if open
+  const panel = document.getElementById("swap-details-panel");
+  if (panel && !panel.classList.contains("hidden")){
+    panel.innerHTML = renderPilotDetailCard(crewId);
+  }
 }
 document.getElementById("swap-crew-id").addEventListener("input", validateSwapForm);
 
@@ -2802,9 +3059,21 @@ function submitSwapRequest(){
   const crewId = document.getElementById("swap-crew-id").value.trim();
   if (!swapSelectedDate || !crewId) return;
   const items = (SCHEDULE[swapSelectedDate] || []).filter(i => i.type !== "off");
-  const routeLabel = items.length
-    ? (items[0].type === "flight" ? `${items[0].dep} → ${items[0].arr} · ${items[0].flightNo}` : dutyMeta(items[0].type).label)
-    : "Day off";
+  let routeLabel = "";
+  if (items.length){
+    if (items.length > 1 && items[0].type === "flight"){
+      routeLabel = `${items[0].dep} ⇄ ${items[0].arr} · ${items.map(it => it.flightNo).join("/")}`;
+    } else if (items[0].type === "flight"){
+      routeLabel = `${items[0].dep} → ${items[0].arr} · ${items[0].flightNo}`;
+    } else {
+      routeLabel = dutyMeta(items[0].type).label;
+    }
+  } else {
+    routeLabel = "DEL · Rest";
+  }
+
+  const pilot = getPilotByCrewId(crewId);
+  const counterpartyName = pilot ? pilot.name : `Crew Member (${crewId})`;
 
   SWAPS.unshift({
     id: swapIdCounter++,
@@ -2812,12 +3081,12 @@ function submitSwapRequest(){
     status: "pending",
     date: swapSelectedDate,
     route: routeLabel,
-    counterparty: "Pending crew response",
-    crewId: crewId.toUpperCase(),
+    counterparty: counterpartyName,
+    crewId: crewId,
     note: ""
   });
 
-  showToast("Swap request sent", "fa-paper-plane");
+  showToast(`Swap request sent to ${counterpartyName}`, "fa-paper-plane");
   swapTab = "outgoing";
   switchView("swaps");
   setSwapTab("outgoing");
