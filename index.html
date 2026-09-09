@@ -638,14 +638,240 @@ input{ font-family:inherit; }
 .pilot-empty-note{ font-size:12.5px; color:var(--ink-muted); display:flex; align-items:center; gap:8px; }
 
 /* ---------------------------------------------------------------------
-   TRADE BOARD / CHAT / DOCUMENTS
+   BID / OPEN TIME SECTION
    --------------------------------------------------------------------- */
+/* --- Header --- */
+.bid-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 16px 10px;
+  background:var(--bg);
+  border-bottom:1px solid var(--line,rgba(0,0,0,.06));
+  position:sticky; top:0; z-index:10;
+}
+.bid-back-btn,.bid-notif-btn{
+  width:38px; height:38px; border-radius:50%; border:none;
+  background:var(--card); color:var(--ink); font-size:15px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  flex-shrink:0;
+}
+.bid-header-center{ text-align:center; flex:1; }
+.bid-title{ font-family:var(--font-display); font-weight:700; font-size:17px; color:var(--ink); line-height:1.2; }
+.bid-subtitle{ font-size:12px; color:var(--ink-muted); margin-top:1px; }
+
+/* --- Period nav --- */
+.bid-period-nav{
+  display:flex; align-items:center; gap:6px;
+  padding:10px 14px 4px;
+  overflow-x:auto; scrollbar-width:none;
+}
+.bid-period-nav::-webkit-scrollbar{ display:none; }
+.bid-period-arrow{
+  width:30px; height:30px; flex-shrink:0; border:none; background:var(--card);
+  border-radius:50%; color:var(--ink-muted); font-size:12px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.bid-period-pills{ display:flex; gap:6px; flex:1; overflow-x:auto; scrollbar-width:none; }
+.bid-period-pills::-webkit-scrollbar{ display:none; }
+.bid-period-pill{
+  white-space:nowrap; padding:6px 14px; border-radius:20px; font-size:12px;
+  font-weight:600; border:none; cursor:pointer;
+  background:var(--card); color:var(--ink-muted);
+  transition:all .15s;
+}
+.bid-period-pill.active{
+  background:var(--navy); color:#fff;
+}
+
+/* --- Tabs --- */
+.bid-tabs{
+  display:flex; border-bottom:2px solid var(--line,rgba(0,0,0,.07));
+  margin:0 16px;
+}
+.bid-tab{
+  flex:1; background:none; border:none; padding:11px 0; font-size:13px;
+  font-weight:600; color:var(--ink-muted); cursor:pointer; position:relative;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  transition:color .15s;
+}
+.bid-tab.active{ color:var(--navy); }
+.bid-tab.active::after{
+  content:""; position:absolute; bottom:-2px; left:0; right:0; height:2px;
+  background:var(--navy); border-radius:2px;
+}
+.bid-count-pill{
+  background:#EF4444; color:#fff; font-size:10px; font-weight:700;
+  padding:1px 6px; border-radius:10px; line-height:1.5;
+}
+
+/* --- Filter chips --- */
+.bid-filters{
+  display:flex; flex-wrap:wrap; gap:8px 6px; padding:10px 16px 8px;
+  background:var(--bg);
+}
+.bid-chip{
+  white-space:nowrap; padding:6px 13px; border-radius:20px; font-size:12px;
+  font-weight:600; border:1.5px solid var(--line,rgba(0,0,0,.15));
+  background:var(--card); color:var(--ink-soft); cursor:pointer;
+  transition:all .15s;
+}
+.bid-chip.active{
+  background:var(--navy); color:#fff; border-color:var(--navy);
+  box-shadow:0 2px 6px rgba(41,105,242,.25);
+}
+
+/* --- Bid content scroll area --- */
+.bid-content{
+  padding:12px 14px 80px; display:flex; flex-direction:column; gap:12px;
+  overflow-y:auto;
+}
+
+/* --- Open Time pairing card --- */
+.ot-card{
+  background:var(--card); border-radius:14px;
+  box-shadow:0 2px 12px -4px rgba(0,0,0,.08);
+  overflow:hidden; border:1px solid var(--line,transparent);
+}
+.ot-card-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 14px 10px;
+  border-bottom:1px solid var(--line,rgba(0,0,0,.06));
+}
+.ot-date-block{ display:flex; flex-direction:column; }
+.ot-date{ font-size:11px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.5px; color:var(--ink-muted); }
+.ot-pairing{ font-size:12px; font-weight:700; color:var(--ink); margin-top:1px; font-family:var(--font-mono); }
+.ot-badges{ display:flex; gap:5px; align-items:center; }
+.ot-badge{
+  font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:8px;
+}
+.ot-badge.intl{ background:#EFF6FF; color:#2563EB; }
+.ot-badge.dom{ background:#F0FDF4; color:#16A34A; }
+.ot-badge.aircraft{ background:var(--card-alt); color:var(--ink-muted); }
+.ot-badge.rank-fo{ background:#F3E8FF; color:#7E22CE; }
+.ot-badge.rank-captain{ background:#FEF3C7; color:#B45309; }
+:root[data-theme="dark"] .ot-badge.intl{ background:#1E3A5F; color:#93C5FD; }
+:root[data-theme="dark"] .ot-badge.dom{ background:#14532D; color:#86EFAC; }
+:root[data-theme="dark"] .ot-badge.rank-fo{ background:#3B0764; color:#E9D5FF; }
+:root[data-theme="dark"] .ot-badge.rank-captain{ background:#451A03; color:#FDE68A; }
+
+/* Route visual */
+.ot-route-row{
+  display:flex; align-items:center; gap:0; padding:12px 14px 8px;
+}
+.ot-airport{
+  display:flex; flex-direction:column; align-items:center;
+  min-width:44px;
+}
+.ot-iata{ font-family:var(--font-mono); font-weight:800; font-size:18px; color:var(--ink); }
+.ot-city{ font-size:9.5px; color:var(--ink-muted); margin-top:1px; text-align:center; }
+.ot-arrow-section{ flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; }
+.ot-flight-line{
+  width:100%; display:flex; align-items:center; gap:0;
+}
+.ot-line{ flex:1; height:1.5px; background:var(--line,rgba(0,0,0,.12)); }
+.ot-plane-icon{ font-size:13px; color:var(--navy); padding:0 4px; }
+.ot-flight-num{ font-size:10px; color:var(--ink-muted); font-weight:600; font-family:var(--font-mono); }
+.ot-times{
+  display:flex; justify-content:space-between; padding:0 14px 10px;
+  font-size:12px; color:var(--ink-muted);
+}
+.ot-time-dep,.ot-time-arr{ display:flex; flex-direction:column; gap:1px; }
+.ot-time-val{ font-weight:700; color:var(--ink); font-family:var(--font-mono); font-size:13.5px; }
+.ot-time-lbl{ font-size:10px; color:var(--ink-muted); }
+.ot-duration-badge{
+  display:flex; align-items:center; gap:4px; font-size:11px;
+  color:var(--ink-muted); font-weight:600;
+  background:var(--card-alt); padding:4px 10px; border-radius:20px;
+}
+
+/* Stats row */
+.ot-stats{
+  display:flex; gap:0; border-top:1px solid var(--line,rgba(0,0,0,.06));
+  border-bottom:1px solid var(--line,rgba(0,0,0,.06));
+}
+.ot-stat{
+  flex:1; padding:9px 10px; text-align:center;
+  border-right:1px solid var(--line,rgba(0,0,0,.06));
+}
+.ot-stat:last-child{ border-right:none; }
+.ot-stat-val{ font-size:13px; font-weight:700; color:var(--ink); font-family:var(--font-mono); }
+.ot-stat-lbl{ font-size:9.5px; color:var(--ink-muted); margin-top:1px; text-transform:uppercase; letter-spacing:.4px; }
+
+/* Layover strip */
+.ot-layover{
+  display:flex; align-items:center; gap:8px;
+  padding:8px 14px; background:var(--card-alt);
+  font-size:11.5px; color:var(--ink-muted);
+}
+.ot-layover i{ color:var(--navy); font-size:12px; }
+
+/* Slots progress */
+.ot-slots-row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 14px 4px; font-size:11.5px; color:var(--ink-muted);
+}
+.ot-slots-bar{ height:4px; border-radius:4px; background:var(--card-alt); margin:0 14px 12px; overflow:hidden; }
+.ot-slots-fill{ height:100%; border-radius:4px; background:#22C55E; transition:width .3s; }
+.ot-slots-fill.few{ background:#F59E0B; }
+.ot-slots-fill.full{ background:#EF4444; }
+
+/* Bid CTA */
+.ot-footer{ display:flex; align-items:center; gap:10px; padding:10px 14px 14px; }
+.btn-bid{
+  flex:1; background:var(--navy); color:#fff; border:none; padding:12px;
+  border-radius:10px; font-weight:700; font-size:13px; cursor:pointer;
+  letter-spacing:.3px; transition:opacity .15s;
+}
+.btn-bid:hover{ opacity:.88; }
+.btn-bid.bid-placed{ background:#22C55E; }
+.btn-bid-detail{
+  width:38px; height:38px; background:var(--card-alt); border:none; border-radius:10px;
+  color:var(--ink-muted); font-size:14px; cursor:pointer; display:flex;
+  align-items:center; justify-content:center; flex-shrink:0;
+}
+
+/* --- My Bids card --- */
+.mb-card{
+  background:var(--card); border-radius:14px;
+  box-shadow:0 2px 12px -4px rgba(0,0,0,.08);
+  padding:14px 15px; border:1px solid var(--line,transparent);
+}
+.mb-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.mb-sector{ font-family:var(--font-mono); font-weight:800; font-size:15px; color:var(--ink); }
+.mb-flights{ font-size:11px; color:var(--ink-muted); margin-top:2px; }
+.mb-status-pill{
+  padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; flex-shrink:0;
+}
+.mb-status-pill.pending{ background:#FEF3C7; color:#92400E; }
+.mb-status-pill.approved{ background:#D1FAE5; color:#065F46; }
+.mb-status-pill.declined{ background:#FEE2E2; color:#991B1B; }
+:root[data-theme="dark"] .mb-status-pill.pending{ background:#451A03; color:#FCD34D; }
+:root[data-theme="dark"] .mb-status-pill.approved{ background:#052E16; color:#6EE7B7; }
+:root[data-theme="dark"] .mb-status-pill.declined{ background:#450A0A; color:#FCA5A5; }
+.mb-meta{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; font-size:11.5px; color:var(--ink-muted); }
+.mb-meta span{ display:flex; align-items:center; gap:4px; }
+.mb-submitted{ margin-top:8px; font-size:11px; color:var(--ink-muted); }
+.btn-cancel-bid{
+  margin-top:12px; width:100%; background:var(--card-alt); border:1px solid var(--line,rgba(0,0,0,.08));
+  color:var(--ink-muted); padding:10px; border-radius:9px; font-size:12px;
+  font-weight:600; cursor:pointer;
+}
+.btn-cancel-bid:hover{ color:#EF4444; border-color:#EF4444; }
+
+/* empty state */
+.bid-empty{ text-align:center; padding:50px 20px; }
+.bid-empty i{ font-size:36px; color:var(--ink-muted); opacity:.35; }
+.bid-empty p{ margin-top:12px; color:var(--ink-muted); font-size:13px; }
+
+/* legacy trade card (kept for compatibility) */
 .trade-card{ background:var(--card); border-radius:var(--radius-md); padding:15px 16px; margin-bottom:10px; }
 .trade-top{ display:flex; justify-content:space-between; align-items:center; }
 .trade-route{ font-family:var(--font-mono); font-weight:700; font-size:14.5px; color:var(--ink); }
 .trade-by{ font-size:12px; color:var(--ink-muted); margin-top:3px; }
 .trade-note{ font-size:12.5px; margin-top:9px; color:var(--ink); background:var(--card-alt); padding:9px 10px; border-radius:8px; }
 .btn-offer{ margin-top:10px; width:100%; background:var(--navy); color:#fff; border:none; padding:11px; border-radius:9px; font-weight:700; font-size:12.5px; }
+
+
 
 .chat-row{ display:flex; gap:11px; align-items:center; background:var(--card); border-radius:var(--radius-md); padding:13px 15px; margin-bottom:9px; }
 .chat-avatar{ width:42px; height:42px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-family:var(--font-display); flex-shrink:0; font-size:13px; }
@@ -1348,13 +1574,47 @@ body{ background:var(--bg-outer); }
       </div>
     </section>
 
-    <!-- ---------- TRADE BOARD ---------- -->
+    <!-- ---------- BID / OPEN TIME ---------- -->
     <section id="view-board" class="view hidden">
-      <div class="subpage-head">
-        <button onclick="switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
-        <div class="sp-title-block"><h2>Trade Board</h2></div>
+      <!-- Header -->
+      <div class="bid-header">
+        <button class="bid-back-btn" onclick="switchView('dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+        <div class="bid-header-center">
+          <div class="bid-title">Open Time</div>
+          <div class="bid-subtitle" id="bid-period-label">September 2026</div>
+        </div>
+        <button class="bid-notif-btn" onclick="showToast('No new bid notifications','fa-bell')"><i class="fa-regular fa-bell"></i></button>
       </div>
-      <div class="app-main" id="board-list"><!-- rendered by JS --></div>
+
+      <!-- Period Selector -->
+      <div class="bid-period-nav">
+        <button class="bid-period-arrow" onclick="changeBidPeriod(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="bid-period-pills" id="bid-period-pills"><!-- rendered by JS --></div>
+        <button class="bid-period-arrow" onclick="changeBidPeriod(1)"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="bid-tabs">
+        <button class="bid-tab active" id="bid-tab-open" onclick="switchBidTab('open')">Open Time</button>
+        <button class="bid-tab" id="bid-tab-mybids" onclick="switchBidTab('mybids')">
+          My Bids
+          <span class="bid-count-pill" id="bid-mybids-count">2</span>
+        </button>
+      </div>
+
+      <!-- Filter chips -->
+      <div class="bid-filters" id="bid-filters">
+        <button class="bid-chip active" data-filter="all" onclick="setBidFilter(this,'all')">All</button>
+        <button class="bid-chip" data-filter="fo" onclick="setBidFilter(this,'fo')">First Officer</button>
+        <button class="bid-chip" data-filter="captain" onclick="setBidFilter(this,'captain')">Captain</button>
+        <button class="bid-chip" data-filter="b777" onclick="setBidFilter(this,'b777')">B777</button>
+        <button class="bid-chip" data-filter="b787" onclick="setBidFilter(this,'b787')">B787</button>
+        <button class="bid-chip" data-filter="intl" onclick="setBidFilter(this,'intl')">International</button>
+        <button class="bid-chip" data-filter="dom" onclick="setBidFilter(this,'dom')">Domestic</button>
+      </div>
+
+      <!-- Content area -->
+      <div class="bid-content" id="bid-content"><!-- rendered by JS --></div>
     </section>
 
     <!-- ---------- CHAT ---------- -->
@@ -1903,10 +2163,91 @@ function renderPilotDetailCard(crewId){
 }
 
 /* ---- Mock trade board ---------------------------------------------------*/
-const TRADE_BOARD = [
-  { route:"DEL → LHR · AI131", date:"08 Sep 2026", postedBy:"Arjun Nair (CA3310)", note:"Open trip, looking for a same-week DEL–BOM instead." },
-  { route:"BOM → SIN · AI132", date:"14 Sep 2026", postedBy:"Kavya Reddy (CA2765)", note:"Willing to trade for any DXB turn." },
-  { route:"DEL Reserve (3-day)", date:"21 Sep 2026", postedBy:"Sameer Khan (CA1904)", note:"Reserve block open to any qualified B777 captain." }
+/* ---- Open Time / Bid Board Data -----------------------------------------*/
+const OPEN_TIME = [
+  {
+    id:"OT001", flightNums:["AI131","AI132"], route:["DEL","LHR","DEL"],
+    startDate:"2026-10-04", endDate:"2026-10-06",
+    depTime:"01:25", arrTime:"08:10+1", duration:"8h 45m",
+    aircraft:"B777-200LR", type:"intl", rank:"fo",
+    slots:2, totalSlots:2,
+    pairing:"P-131/132", sector:"DEL–LHR–DEL",
+    credit:"14h 20m", layover:"London Heathrow", layoverHrs:"24h",
+    airline:"Air India"
+  },
+  {
+    id:"OT002", flightNums:["AI887","AI688"], route:["DEL","BOM","DEL"],
+    startDate:"2026-10-08", endDate:"2026-10-08",
+    depTime:"06:10", arrTime:"14:45", duration:"2h 35m",
+    aircraft:"B777-300ER", type:"dom", rank:"fo",
+    slots:1, totalSlots:1,
+    pairing:"P-887/688", sector:"DEL–BOM–DEL",
+    credit:"5h 10m", layover:null, layoverHrs:null,
+    airline:"Air India"
+  },
+  {
+    id:"OT003", flightNums:["AI173"], route:["DEL","SFO"],
+    startDate:"2026-10-12", endDate:"2026-10-14",
+    depTime:"03:30", arrTime:"06:20+1", duration:"16h 50m",
+    aircraft:"B777-200LR", type:"intl", rank:"fo",
+    slots:1, totalSlots:2,
+    pairing:"P-173/174", sector:"DEL–SFO–DEL",
+    credit:"28h 40m", layover:"San Francisco (Hyatt Regency SFO)", layoverHrs:"48h",
+    airline:"Air India"
+  },
+  {
+    id:"OT004", flightNums:["AI302","AI301"], route:["DEL","DXB","DEL"],
+    startDate:"2026-10-16", endDate:"2026-10-17",
+    depTime:"22:45", arrTime:"07:50+1", duration:"3h 05m",
+    aircraft:"B787-8", type:"intl", rank:"fo",
+    slots:3, totalSlots:3,
+    pairing:"P-302/301", sector:"DEL–DXB–DEL",
+    credit:"6h 10m", layover:"Dubai (DoubleTree by Hilton)", layoverHrs:"12h",
+    airline:"Air India"
+  },
+  {
+    id:"OT005", flightNums:["AI839","AI840"], route:["DEL","HYD","DEL"],
+    startDate:"2026-10-20", endDate:"2026-10-20",
+    depTime:"08:30", arrTime:"16:15", duration:"2h 45m",
+    aircraft:"B777-300ER", type:"dom", rank:"fo",
+    slots:2, totalSlots:2,
+    pairing:"P-839/840", sector:"DEL–HYD–DEL",
+    credit:"5h 30m", layover:null, layoverHrs:null,
+    airline:"Air India"
+  },
+  {
+    id:"OT006", flightNums:["AI191"], route:["DEL","JFK"],
+    startDate:"2026-10-22", endDate:"2026-10-25",
+    depTime:"02:05", arrTime:"09:15+1", duration:"15h 10m",
+    aircraft:"B777-200LR", type:"intl", rank:"captain",
+    slots:1, totalSlots:1,
+    pairing:"P-191/192", sector:"DEL–JFK–DEL",
+    credit:"30h 25m", layover:"New York JFK (Marriott JFK)", layoverHrs:"48h",
+    airline:"Air India"
+  },
+  {
+    id:"OT007", flightNums:["AI113","AI114"], route:["BOM","LHR","BOM"],
+    startDate:"2026-10-28", endDate:"2026-10-30",
+    depTime:"02:50", arrTime:"09:00+1", duration:"9h 10m",
+    aircraft:"B787-8", type:"intl", rank:"captain",
+    slots:1, totalSlots:1,
+    pairing:"P-113/114", sector:"BOM–LHR–BOM",
+    credit:"18h 20m", layover:"London Heathrow (Sofitel T5)", layoverHrs:"24h",
+    airline:"Air India"
+  }
+];
+
+const MY_BIDS = [
+  {
+    id:"MB001", refId:"OT003", flightNums:["AI173","AI174"], sector:"DEL–SFO–DEL",
+    startDate:"2026-10-12", aircraft:"B777-200LR", credit:"28h 40m",
+    status:"pending", submittedOn:"2026-09-28"
+  },
+  {
+    id:"MB002", refId:"OT002", flightNums:["AI887","AI688"], sector:"DEL–BOM–DEL",
+    startDate:"2026-10-08", aircraft:"B777-300ER", credit:"5h 10m",
+    status:"approved", submittedOn:"2026-09-25"
+  }
 ];
 
 /* ---- Mock chat threads ---------------------------------------------------*/
@@ -3093,21 +3434,293 @@ function submitSwapRequest(){
 }
 
 /* ==========================================================================
-   TRADE BOARD
+   BID / OPEN TIME SECTION
    ========================================================================== */
-function renderTradeBoard(){
-  document.getElementById("board-list").innerHTML = TRADE_BOARD.map(t => `
-    <div class="trade-card">
-      <div class="trade-top">
-        <div class="trade-route">${t.route}</div>
-        <span class="status-chip pending">${t.date}</span>
-      </div>
-      <div class="trade-by">Posted by ${t.postedBy}</div>
-      <div class="trade-note">${t.note}</div>
-      <button class="btn-offer" onclick="showToast('Offer sent to ${t.postedBy.split(' (')[0]}', 'fa-paper-plane')">Offer a trade</button>
-    </div>
-  `).join("");
+
+/* ---- State ---- */
+let bidTab = "open";          // "open" | "mybids"
+let bidFilter = "all";        // filter chip value
+let bidPeriodOffset = 0;      // months offset from current month
+let placedBids = new Set();   // IDs of open-time pairings user has bid on this session
+
+/* --- Airport city name lookup --- */
+const IATA_CITY = {
+  DEL:"New Delhi", BOM:"Mumbai", HYD:"Hyderabad", LHR:"London",
+  SFO:"San Francisco", JFK:"New York", DXB:"Dubai", SIN:"Singapore"
+};
+
+function getBidPeriodDate(){
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth() + bidPeriodOffset, 1);
 }
+
+function renderTradeBoard(){
+  // render period pills
+  renderBidPeriodPills();
+  // render content
+  renderBidContent();
+}
+
+function renderBidPeriodPills(){
+  const pills = document.getElementById("bid-period-pills");
+  if (!pills) return;
+  const base = getBidPeriodDate();
+  // Show prev, current, next 3
+  let html = "";
+  for (let i = -1; i <= 3; i++){
+    const d = new Date(base.getFullYear(), base.getMonth() + i - bidPeriodOffset + bidPeriodOffset, 1);
+    // simpler: show months around current period
+    const pd = new Date(new Date().getFullYear(), new Date().getMonth() + i, 1);
+    const lbl = pd.toLocaleDateString("en-US",{month:"short",year:"numeric"});
+    const isActive = i === 0;
+    html += `<button class="bid-period-pill${isActive?" active":""}" onclick="jumpBidPeriod(${i})">${lbl}</button>`;
+  }
+  pills.innerHTML = html;
+  // update header label
+  const periodLabel = document.getElementById("bid-period-label");
+  if (periodLabel){
+    const pd = getBidPeriodDate();
+    periodLabel.textContent = pd.toLocaleDateString("en-US",{month:"long",year:"numeric"});
+  }
+  // update filter visibility
+  const filtersEl = document.getElementById("bid-filters");
+  if (filtersEl) filtersEl.style.display = bidTab === "open" ? "flex" : "none";
+}
+
+let _bidPeriodPillOffset = 0;
+function jumpBidPeriod(pillIndex){
+  _bidPeriodPillOffset = pillIndex;
+  // re-render pills with selection
+  const pills = document.getElementById("bid-period-pills");
+  if (!pills) return;
+  pills.querySelectorAll(".bid-period-pill").forEach((btn,i) => {
+    btn.classList.toggle("active", i === pillIndex + 1);
+  });
+  renderBidContent();
+}
+
+function changeBidPeriod(dir){
+  bidPeriodOffset += dir;
+  renderBidPeriodPills();
+  renderBidContent();
+}
+
+function switchBidTab(tab){
+  bidTab = tab;
+  document.getElementById("bid-tab-open").classList.toggle("active", tab === "open");
+  document.getElementById("bid-tab-mybids").classList.toggle("active", tab === "mybids");
+  const filtersEl = document.getElementById("bid-filters");
+  if (filtersEl) filtersEl.style.display = tab === "open" ? "flex" : "none";
+  renderBidContent();
+}
+
+function setBidFilter(btn, filter){
+  bidFilter = filter;
+  document.querySelectorAll(".bid-chip").forEach(c => c.classList.remove("active"));
+  btn.classList.add("active");
+  renderBidContent();
+}
+
+function renderBidContent(){
+  const content = document.getElementById("bid-content");
+  if (!content) return;
+  if (bidTab === "open"){
+    renderOpenTime(content);
+  } else {
+    renderMyBids(content);
+  }
+}
+
+function renderOpenTime(container){
+  let items = OPEN_TIME;
+  // filter
+  if (bidFilter !== "all"){
+    items = items.filter(t => {
+      if (bidFilter === "fo") return t.rank === "fo";
+      if (bidFilter === "captain") return t.rank === "captain";
+      if (bidFilter === "b777") return t.aircraft.startsWith("B777");
+      if (bidFilter === "b787") return t.aircraft.startsWith("B787");
+      if (bidFilter === "intl") return t.type === "intl";
+      if (bidFilter === "dom") return t.type === "dom";
+      return true;
+    });
+  }
+  if (!items.length){
+    container.innerHTML = `<div class="bid-empty"><i class="fa-regular fa-calendar-xmark"></i><p>No open time pairings for this filter.</p></div>`;
+    return;
+  }
+  container.innerHTML = items.map(t => renderOTCard(t)).join("");
+}
+
+function renderOTCard(t){
+  const routeStops = t.route;
+  const isBid = placedBids.has(t.id);
+  const myBidEntry = MY_BIDS.find(b => b.refId === t.id);
+  const alreadyBid = !!myBidEntry || isBid;
+
+  // Route visual: stops with arrows between
+  let routeHTML = "";
+  for (let i = 0; i < routeStops.length; i++){
+    const iata = routeStops[i];
+    const city = IATA_CITY[iata] || iata;
+    routeHTML += `<div class="ot-airport"><div class="ot-iata">${iata}</div><div class="ot-city">${city}</div></div>`;
+    if (i < routeStops.length - 1){
+      const fn = t.flightNums[i] || "";
+      routeHTML += `
+        <div class="ot-arrow-section">
+          <div class="ot-flight-line">
+            <div class="ot-line"></div>
+            <i class="fa-solid fa-plane ot-plane-icon"></i>
+            <div class="ot-line"></div>
+          </div>
+          <div class="ot-flight-num">${fn}</div>
+        </div>`;
+    }
+  }
+
+  // Date display
+  const startD = new Date(t.startDate + "T00:00:00");
+  const dateStr = startD.toLocaleDateString("en-US",{day:"2-digit",month:"short",year:"numeric"});
+
+  // Slots
+  const filled = t.totalSlots - t.slots;
+  const pct = Math.round((filled / t.totalSlots) * 100);
+  const barClass = pct >= 100 ? "full" : pct >= 60 ? "few" : "";
+  const slotText = t.slots === 0 ? "No slots left" : `${t.slots} slot${t.slots > 1?"s":""} available`;
+
+  // rank badge
+  const rankLabel = t.rank === "fo" ? "First Officer" : "Captain";
+
+  // Layover strip
+  const layoverHTML = t.layover
+    ? `<div class="ot-layover"><i class="fa-solid fa-bed"></i> Layover: ${t.layover} · ${t.layoverHrs}</div>`
+    : "";
+
+  // CTA button
+  const btnLabel = alreadyBid ? (myBidEntry?.status === "approved" ? "✓ Approved" : "✓ Bid Placed") : "Bid for this Pairing";
+  const btnClass = alreadyBid ? "btn-bid bid-placed" : "btn-bid";
+  const btnDisabled = alreadyBid ? "disabled" : "";
+  const btnOnclick = alreadyBid ? "" : `onclick="placeBid('${t.id}')"`;
+
+  return `
+    <div class="ot-card" id="ot-card-${t.id}">
+      <div class="ot-card-head">
+        <div class="ot-date-block">
+          <div class="ot-date">${dateStr}</div>
+          <div class="ot-pairing">${t.pairing}</div>
+        </div>
+        <div class="ot-badges">
+          <span class="ot-badge rank-${t.rank}">${rankLabel}</span>
+          <span class="ot-badge ${t.type}">${t.type === "intl" ? "International" : "Domestic"}</span>
+          <span class="ot-badge aircraft">${t.aircraft}</span>
+        </div>
+      </div>
+      <div class="ot-route-row">${routeHTML}</div>
+      <div class="ot-times">
+        <div class="ot-time-dep">
+          <div class="ot-time-val">${t.depTime}</div>
+          <div class="ot-time-lbl">Departure</div>
+        </div>
+        <div class="ot-duration-badge"><i class="fa-regular fa-clock"></i>${t.duration}</div>
+        <div class="ot-time-arr" style="text-align:right;">
+          <div class="ot-time-val">${t.arrTime}</div>
+          <div class="ot-time-lbl">Arrival</div>
+        </div>
+      </div>
+      <div class="ot-stats">
+        <div class="ot-stat">
+          <div class="ot-stat-val">${t.credit}</div>
+          <div class="ot-stat-lbl">Credit Time</div>
+        </div>
+        <div class="ot-stat">
+          <div class="ot-stat-val">${rankLabel}</div>
+          <div class="ot-stat-lbl">Required</div>
+        </div>
+        <div class="ot-stat">
+          <div class="ot-stat-val">${t.airline}</div>
+          <div class="ot-stat-lbl">Operator</div>
+        </div>
+      </div>
+      ${layoverHTML}
+      <div class="ot-slots-row">
+        <span><i class="fa-solid fa-users" style="font-size:11px; margin-right:4px;"></i>${slotText}</span>
+        <span style="font-weight:700; color:var(--ink);">${filled}/${t.totalSlots} filled</span>
+      </div>
+      <div class="ot-slots-bar"><div class="ot-slots-fill ${barClass}" style="width:${pct}%;"></div></div>
+      <div class="ot-footer">
+        <button class="${btnClass}" ${btnDisabled} ${btnOnclick}>${btnLabel}</button>
+        <button class="btn-bid-detail" title="Pairing details" onclick="showToast('Pairing ${t.pairing}: ${t.sector}','fa-route')"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+      </div>
+    </div>`;
+}
+
+function placeBid(id){
+  placedBids.add(id);
+  MY_BIDS.push({
+    id:"MB-" + id, refId:id,
+    flightNums: OPEN_TIME.find(t=>t.id===id)?.flightNums || [],
+    sector: OPEN_TIME.find(t=>t.id===id)?.sector || "",
+    startDate: OPEN_TIME.find(t=>t.id===id)?.startDate || "",
+    aircraft: OPEN_TIME.find(t=>t.id===id)?.aircraft || "",
+    credit: OPEN_TIME.find(t=>t.id===id)?.credit || "",
+    status:"pending",
+    submittedOn: new Date().toISOString().slice(0,10)
+  });
+  // update count pill
+  const countPill = document.getElementById("bid-mybids-count");
+  if (countPill) countPill.textContent = MY_BIDS.length;
+  showToast("Bid submitted! Check My Bids for status.", "fa-circle-check");
+  renderBidContent();
+}
+
+function renderMyBids(container){
+  const items = MY_BIDS;
+  if (!items.length){
+    container.innerHTML = `<div class="bid-empty"><i class="fa-regular fa-clipboard"></i><p>You have no active bids yet.<br>Browse Open Time to bid on pairings.</p></div>`;
+    return;
+  }
+  container.innerHTML = items.map(b => {
+    const startD = new Date(b.startDate + "T00:00:00");
+    const dateStr = startD.toLocaleDateString("en-US",{day:"2-digit",month:"short",year:"numeric"});
+    const submittedD = new Date(b.submittedOn + "T00:00:00");
+    const submittedStr = submittedD.toLocaleDateString("en-US",{day:"2-digit",month:"short",year:"numeric"});
+    const statusLabel = {pending:"⏳ Pending Review", approved:"✓ Approved", declined:"✗ Declined"}[b.status] || b.status;
+    const cancelBtn = b.status === "pending"
+      ? `<button class="btn-cancel-bid" onclick="cancelBid('${b.id}')">Withdraw Bid</button>`
+      : "";
+    return `
+      <div class="mb-card" id="mb-card-${b.id}">
+        <div class="mb-top">
+          <div>
+            <div class="mb-sector">${b.sector}</div>
+            <div class="mb-flights">${b.flightNums.join(" · ")}</div>
+          </div>
+          <span class="mb-status-pill ${b.status}">${statusLabel}</span>
+        </div>
+        <div class="mb-meta">
+          <span><i class="fa-regular fa-calendar"></i>${dateStr}</span>
+          <span><i class="fa-solid fa-plane"></i>${b.aircraft}</span>
+          <span><i class="fa-regular fa-clock"></i>${b.credit} credit</span>
+        </div>
+        <div class="mb-submitted">Submitted on ${submittedStr}</div>
+        ${cancelBtn}
+      </div>`;
+  }).join("");
+}
+
+function cancelBid(bidId){
+  const idx = MY_BIDS.findIndex(b => b.id === bidId);
+  if (idx > -1){
+    const bid = MY_BIDS[idx];
+    placedBids.delete(bid.refId);
+    MY_BIDS.splice(idx, 1);
+  }
+  const countPill = document.getElementById("bid-mybids-count");
+  if (countPill) countPill.textContent = MY_BIDS.length;
+  showToast("Bid withdrawn.", "fa-circle-xmark");
+  renderBidContent();
+}
+
 
 /* ==========================================================================
    CHAT
