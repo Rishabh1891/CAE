@@ -2254,12 +2254,32 @@ const MY_BIDS = [
 
 /* ---- Mock chat threads ---------------------------------------------------*/
 const CHATS = [
-  { name:"Capt. C. V. Madhu", initials:"CV", photo:"https://pbs.twimg.com/media/ErtjKC5UcAA88zw?format=jpg&name=900x900", preview:"Hey Rishabh, this is the captain CV Madhu. I will be undertaking your flight operations skills on 30th. Please be prepare and all the best. You can ping me here in case of any assistance.", time:"9:41 PM" }
+  {
+    name: "Swati Rawat",
+    initials: "SR",
+    photo: "https://media.licdn.com/dms/image/v2/D5603AQE8z-enSqcCYQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1731760067163?e=2147483647&v=beta&t=c_TGNiJSjUIPUFYRzoNw845BgcKg0MwPYq4znNIVpnk",
+    preview: "Hey Rishabh, I am Swati HR at Air India. I will be handling your payroll, leaves and everything regarding operations. You can connect me here for any query or mail me on swati.rathi@airindia.com thank you.",
+    time: "10:15 AM"
+  },
+  {
+    name: "Capt. C. V. Madhu",
+    initials: "CV",
+    photo: "https://pbs.twimg.com/media/ErtjKC5UcAA88zw?format=jpg&name=900x900",
+    preview: "Hey Rishabh, this is the captain CV Madhu. I will be undertaking your flight operations skills on 30th. Please be prepare and all the best. You can ping me here in case of any assistance.",
+    time: "9:41 PM"
+  }
 ];
-const CHAT_MESSAGES = CHATS.map(chat => [
-  { direction:"incoming", text:chat.preview, time:chat.time },
-  { direction:"outgoing", text:"Alright Captain, I will let you know that. Thanks", time:"9:45 PM" }
-]);
+
+const CHAT_MESSAGES = [
+  [
+    { direction: "incoming", text: "Hey Rishabh, I am Swati HR at Air India. I will be handling your payroll, leaves and everything regarding operations. You can connect me here for any query or mail me on swati.rathi@airindia.com thank you.", time: "10:15 AM" },
+    { direction: "outgoing", text: "Thank you for connecting Swati. Yes, I will be pinging you for queries.", time: "04:04 PM" }
+  ],
+  [
+    { direction: "incoming", text: "Hey Rishabh, this is the captain CV Madhu. I will be undertaking your flight operations skills on 30th. Please be prepare and all the best. You can ping me here in case of any assistance.", time: "9:41 PM" },
+    { direction: "outgoing", text: "Alright Captain, I will let you know that. Thanks", time: "9:45 PM" }
+  ]
+];
 let activeChatIndex = 0;
 
 /* ---- Mock documents -------------------------------------------------------*/
@@ -3729,12 +3749,12 @@ function cancelBid(bidId){
 function renderChat(){
   document.getElementById("chat-list").innerHTML = CHATS.map((c, index) => `
     <div class="chat-row" role="button" tabindex="0" onclick="openChat(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openChat(${index})}">
-      <div class="chat-avatar">${c.initials}</div>
-      <div>
-        <div class="chat-name">${c.name}</div>
-        <div class="chat-preview">${c.preview}</div>
+      <div class="chat-avatar">${c.photo ? `<img src="${c.photo}" alt="${escapeChatText(c.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : c.initials}</div>
+      <div style="min-width:0; flex:1;">
+        <div class="chat-name">${escapeChatText(c.name)}</div>
+        <div class="chat-preview">${escapeChatText(c.preview)}</div>
       </div>
-      <div class="chat-time">${c.time}</div>
+      <div class="chat-time">${escapeChatText(c.time)}</div>
     </div>
   `).join("");
 }
