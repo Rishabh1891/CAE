@@ -2255,6 +2255,13 @@ const MY_BIDS = [
 /* ---- Mock chat threads ---------------------------------------------------*/
 const CHATS = [
   {
+    name: "Ameya Attri",
+    initials: "AA",
+    photo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaGLsOsdOY7cQrHK3a844FPwtX1LNO_wJGy7XjY7gyigBvu3WelMLeRMI&s=10",
+    preview: "Hey Rishabh kaisa hai. Kal ke liye tayaar hai? Flight plan mein help chahiye to batana. Banake yaha bhej do mujhe.",
+    time: "11:20 AM"
+  },
+  {
     name: "Swati Rawat",
     initials: "SR",
     photo: "https://media.licdn.com/dms/image/v2/D5603AQE8z-enSqcCYQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1731760067163?e=2147483647&v=beta&t=c_TGNiJSjUIPUFYRzoNw845BgcKg0MwPYq4znNIVpnk",
@@ -2271,6 +2278,10 @@ const CHATS = [
 ];
 
 const CHAT_MESSAGES = [
+  [
+    { direction: "incoming", text: "Hey Rishabh kaisa hai. Kal ke liye tayaar hai? Flight plan mein help chahiye to batana. Banake yaha bhej do mujhe.", time: "11:20 AM" },
+    { direction: "outgoing", text: "Aur Kaptaan sahab. Theek hai banata hu. Baaki bata dunga yahi.", time: "03:53 PM" }
+  ],
   [
     { direction: "incoming", text: "Hey Rishabh, I am Swati HR at Air India. I will be handling your payroll, leaves and everything regarding operations. You can connect me here for any query or mail me on swati.rathi@airindia.com thank you.", time: "10:15 AM" },
     { direction: "outgoing", text: "Thank you for connecting Swati. Yes, I will be pinging you for queries.", time: "04:04 PM" }
