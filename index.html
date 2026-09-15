@@ -1959,6 +1959,20 @@ const AIRPORTS = {
       { name:"ATIS",          val:"122.95" },
       { name:"Approach",      val:"118.77" }
     ]
+  },
+  MAA: {
+    name: "Chennai International Airport",
+    icao: "VOMM", iata: "MAA",
+    city: "Chennai, India",
+    elevation: "52 ft (16 m)",
+    timezone: "IST (UTC +5:30)",
+    dispatch: "Air India Flight Operations, Terminal 2, Chennai International Airport, Meenambakkam, Chennai – 600027",
+    frequencies: [
+      { name:"Tower",         val:"118.1" },
+      { name:"Ground",        val:"121.9" },
+      { name:"ATIS",          val:"126.4" },
+      { name:"Approach",      val:"127.9" }
+    ]
   }
 };
 
@@ -2014,13 +2028,15 @@ const ROSTER = {
     {type:"flight", flightNo:"AIC538", dep:"MAA", arr:"DEL", depTime:"20:10", arrTime:"23:00", airtime:"02h 50m", note:"Terminal 1 → Terminal 3", crew:{captains:["Soniya Gupta"],firstOfficers:["Rishabh Tripathi"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Ananya Iyer","Rahul Verma", "Kavita Kullupati", "Madhuri Sharma", "Anikt Vats", "Kalyani Mukherji", "Meenakshi Sati", "Sheena Khan", "Mohana Chaturvedi", "Omna Om Vashishth", "Khushi Desai", "Harjeet Bal"]}}
   ],
   "2026-09-14": [{type:"reserve", reserveLocation:"airport", start:"12:00", end:"19:00", note:"ASBY · Starting Queue 76"}],
-  "2026-09-15": [{type:"flight", flightNo:"AIC189", aircraft:"B777-300ER", dep:"DEL", arr:"VIE", depTime:"10:45", arrTime:"16:55", airtime:"06h 10m", note:"Terminal 3 → Vienna International Airport", crew:{captains:["Shobhit Roy", "Kunwar Pratap Singh"],firstOfficers:["Rishabh Tripathi", "Sanyam Golam"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Ananya Iyer","Rahul Verma"]}}],
-  "2026-09-16": [{type:"layover", location:"Vienna, Austria", start:"17:00", end:"19:30+1", hotel:{name:"Hilton Vienna Park", address:"Am Stadtpark 1, 1030 Wien, Austria", phone:"+43 1 71700", transport:"Crew coach from VIE Airport", checkIn:"17:30", checkOut:"18:30 on 17 Sep"}, note:"International layover · Vienna"}],
-  "2026-09-17": [{type:"flight", flightNo:"AIC154", aircraft:"B777-300ER", dep:"VIE", arr:"DEL", depTime:"20:30", arrTime:"08:35+1", airtime:"08h 05m", note:"Vienna International Airport → Terminal 3", crew:{captains:["Shobhit Roy", "Kunwar Pratap Singh"],firstOfficers:["Rishabh Tripathi", "Sanyam Golam"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Ananya Iyer","Rahul Verma"]}}],
-  "2026-09-18": [
-    {type:"flight", continuation:true, continuesFrom:"2026-09-17", flightNo:"AIC154", aircraft:"B777-300ER", dep:"VIE", arr:"DEL", arrTime:"08:35", note:"Overnight arrival continuation · Terminal 3"},
-    {type:"off", start:"02:35", note:"Post-flight mandatory rest"}
+  "2026-09-15": [
+    {type:"flight", flightNo:"AI537", aircraft:"B777-300ER", dep:"DEL", arr:"MAA", depTime:"15:45", arrTime:"18:40", airtime:"02h 55m", note:"Terminal 3 → Chennai International Airport", crew:{captains:["Soniya Gupta"],firstOfficers:["Rishabh Tripathi"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Ananya Iyer","Rahul Verma","Kavita Kullupati","Madhuri Sharma","Ankit Vats","Kalyani Mukherji","Meenakshi Sati","Sheena Khan","Mohana Chaturvedi","Omna Om Vashishth","Khushi Desai","Harjeet Bal"]}},
+    {type:"layover", location:"Chennai, India", start:"19:15", end:"19:00+1", hotel:{name:"Taj Coromandel, Chennai", address:"37, Mahatma Gandhi Rd, Nungambakkam, Chennai, Tamil Nadu 600034", phone:"+91 44 6600 2827", transport:"Crew coach from MAA Airport", checkIn:"19:15", checkOut:"19:00 on 16 Sep"}, note:"Domestic layover · Taj Coromandel"}
   ],
+  "2026-09-16": [
+    {type:"flight", flightNo:"AI538", aircraft:"B777-300ER", dep:"MAA", arr:"DEL", depTime:"20:10", arrTime:"23:00", airtime:"02h 50m", note:"Chennai International Airport → Terminal 3", crew:{captains:["Soniya Gupta"],firstOfficers:["Rishabh Tripathi"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Ananya Iyer","Rahul Verma","Kavita Kullupati","Madhuri Sharma","Ankit Vats","Kalyani Mukherji","Meenakshi Sati","Sheena Khan","Mohana Chaturvedi","Omna Om Vashishth","Khushi Desai","Harjeet Bal"]}}
+  ],
+  "2026-09-17": [{type:"off", note:"Rest"}],
+  "2026-09-18": [{type:"off", note:"Rest"}],
   "2026-09-19": [
     {type:"flight", flightNo:"AI887", aircraft:"B777-300ER", dep:"DEL", arr:"BOM", depTime:"07:00", arrTime:"09:15", airtime:"02h 15m", note:"Terminal 3 → Terminal 2 · Widebody domestic", crew:{captains:["Ameya Attri"],firstOfficers:["Rishabh Tripathi"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Rahul Verma"]}},
     {type:"flight", flightNo:"AI687", aircraft:"B777-300ER", dep:"BOM", arr:"DEL", depTime:"11:30", arrTime:"13:45", airtime:"02h 15m", note:"Terminal 2 → Terminal 3", crew:{captains:["Ameya Attri"],firstOfficers:["Rishabh Tripathi"],cabin:["Shreya Nair","Kritika Reddy","Priya Sharma","Rahul Verma"]}}
